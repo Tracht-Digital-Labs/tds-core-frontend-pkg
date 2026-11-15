@@ -475,7 +475,7 @@ describe("reordering by button", () => {
   });
 });
 
-describe("flipReorder — tiles glide instead of teleporting", () => {
+describe("flipReorder, tiles glide instead of teleporting", () => {
   /** jsdom has no layout: give each tile a rect from its current DOM position. */
   function tiles(n: number): { grid: HTMLElement; items: HTMLElement[] } {
     const grid = document.createElement("div");
@@ -522,7 +522,7 @@ describe("flipReorder — tiles glide instead of teleporting", () => {
     expect(items[2]!.animate).not.toHaveBeenCalled();
   });
 
-  it("leaves the dragged tile alone — it already follows the pointer", () => {
+  it("leaves the dragged tile alone, it already follows the pointer", () => {
     const { grid, items } = tiles(2);
     const [a, b] = items as [HTMLElement, HTMLElement];
     flipReorder(items, () => grid.insertBefore(b, a), b);

@@ -104,7 +104,7 @@ export default function CompanyQuotasAdmin() {
       const revoked = data.sessionsRevoked ?? 0;
       toast.success(
         revoked > 0
-          ? `Kontingent gespeichert. ${revoked} Sitzung${revoked === 1 ? "" : "en"} beendet — die Rechte gelten ab der nächsten Anmeldung.`
+          ? `Kontingent gespeichert. ${revoked} Sitzung${revoked === 1 ? "" : "en"} beendet, die Rechte gelten ab der nächsten Anmeldung.`
           : "Kontingent gespeichert.",
       );
     } finally {
@@ -208,7 +208,7 @@ export default function CompanyQuotasAdmin() {
               <span className="text-sm">Firmenadmins zulassen</span>
               <span className="text-xs opacity-70">
                 Ohne diese Freigabe verwaltet niemand aus der Firma heraus Benutzer, Rechte oder
-                Gruppen — die Seite „Meine Firma“ bleibt unsichtbar. Sie selbst können die Firma
+                Gruppen, die Seite „Meine Firma“ bleibt unsichtbar. Sie selbst können die Firma
                 weiterhin vollständig verwalten.
               </span>
             </span>
@@ -243,7 +243,7 @@ export default function CompanyQuotasAdmin() {
             {policy.allowedPermissions !== null &&
               (grouped.length === 0 ? (
                 <p className="tds-empty">
-                  Der Rechte-Katalog ist nicht erreichbar — die Auswahl lässt sich gerade nicht
+                  Der Rechte-Katalog ist nicht erreichbar, die Auswahl lässt sich gerade nicht
                   bearbeiten.
                 </p>
               ) : (

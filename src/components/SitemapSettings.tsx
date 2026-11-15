@@ -31,8 +31,8 @@ const READS_EXCLUSIONS = new Set(["landingpage", "blog"]);
 
 const CACHE_LABEL: Record<string, string> = {
   refreshed: "Sitemap neu erzeugt",
-  not_configured: "nicht gekoppelt — wirkt beim nächsten Rendern",
-  failed: "Site nicht erreichbar — wirkt beim nächsten Rendern",
+  not_configured: "nicht gekoppelt, wirkt beim nächsten Rendern",
+  failed: "Site nicht erreichbar, wirkt beim nächsten Rendern",
   skipped: "übersprungen",
 };
 
@@ -93,7 +93,7 @@ export default function SitemapSettings() {
         setStored(data.sitemap_exclusions ?? {});
         apply(data, list);
       } catch {
-        setError("Sites konnten nicht geladen werden — die API ist nicht erreichbar.");
+        setError("Sites konnten nicht geladen werden, die API ist nicht erreichbar.");
       } finally {
         setLoaded(true);
       }
@@ -128,10 +128,10 @@ export default function SitemapSettings() {
       }
       setRejected(data.rejected ?? []);
       setCache(data.cache_status ?? {});
-      if ((data.rejected ?? []).length > 0) toast.warning("Gespeichert — einzelne Pfade wurden abgelehnt.");
+      if ((data.rejected ?? []).length > 0) toast.warning("Gespeichert, einzelne Pfade wurden abgelehnt.");
       else toast.success("Gespeichert.");
     } catch {
-      toast.danger("Speichern fehlgeschlagen — die API ist nicht erreichbar.");
+      toast.danger("Speichern fehlgeschlagen, die API ist nicht erreichbar.");
     } finally {
       setBusy(false);
     }
@@ -145,7 +145,7 @@ export default function SitemapSettings() {
       {error ? null : (
         <>
           <p className="marginalia">
-            Pfade, die eine Site aus ihrer Sitemap nimmt und mit <code>noindex</code> ausliefert — die
+            Pfade, die eine Site aus ihrer Sitemap nimmt und mit <code>noindex</code> ausliefert, die
             Seite bleibt erreichbar, sie wird nur nicht mehr zum Indexieren angeboten. Ein Pfad pro
             Zeile, beginnend mit <code>/</code>; ein <code>*</code> am Ende schließt alles darunter aus
             (<code>/tag/*</code>). Ein Artikel fällt immer mit seiner Sprachfassung zusammen heraus.

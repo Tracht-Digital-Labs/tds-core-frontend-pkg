@@ -145,7 +145,7 @@ export default function GroupsAdmin() {
       const revoked = (data as { sessionsRevoked?: number }).sessionsRevoked ?? 0;
       toast.success(
         revoked > 0
-          ? `Gruppe gespeichert. ${revoked} Sitzung${revoked === 1 ? "" : "en"} beendet — die Rechte gelten ab der nächsten Anmeldung.`
+          ? `Gruppe gespeichert. ${revoked} Sitzung${revoked === 1 ? "" : "en"} beendet, die Rechte gelten ab der nächsten Anmeldung.`
           : "Gruppe gespeichert.",
       );
       setDraft(null);
@@ -261,7 +261,7 @@ export default function GroupsAdmin() {
               {grouped.length === 0 ? (
                 <p className="tds-empty">
                   Der Rechte-Katalog ist nicht erreichbar. Die Gruppe lässt sich trotzdem
-                  speichern — die bestehenden Rechte bleiben unverändert.
+                  speichern, die bestehenden Rechte bleiben unverändert.
                 </p>
               ) : (
                 grouped.map(([section, defs]) => (

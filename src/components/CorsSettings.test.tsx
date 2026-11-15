@@ -91,7 +91,7 @@ describe("CorsSettings", () => {
         JSON.stringify({
           ok: true,
           saved: ["https://kunde.example"],
-          rejected: [{ value: "https://kunde.de/app", reason: "Nur Schema, Host und ggf. Port — kein Pfad." }],
+          rejected: [{ value: "https://kunde.de/app", reason: "Nur Schema, Host und ggf. Port, kein Pfad." }],
           ...statusDefaults,
         }),
         { status: 200 },

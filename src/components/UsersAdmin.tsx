@@ -127,7 +127,7 @@ export default function UsersAdmin() {
       // frontendFetch rejects like fetch when the request never reaches the
       // auth API; uncaught, the submit ended without a word and the form
       // stayed open as if nothing had been sent.
-      toast.danger("Anlegen fehlgeschlagen — die API ist nicht erreichbar.");
+      toast.danger("Anlegen fehlgeschlagen, die API ist nicht erreichbar.");
       return;
     }
     if (res.ok) {
@@ -157,7 +157,7 @@ export default function UsersAdmin() {
       body: JSON.stringify(patch),
     }).catch(() => null);
     if (res === null) {
-      toast.danger("Speichern fehlgeschlagen — die API ist nicht erreichbar.");
+      toast.danger("Speichern fehlgeschlagen, die API ist nicht erreichbar.");
       return;
     }
     if (res.ok) {
@@ -178,7 +178,7 @@ export default function UsersAdmin() {
   const resetPassword = async (u: AdminUser) => {
     const res = await frontendFetch(`${usersUrl}/${u.id}/reset-password`, { method: "POST" }).catch(() => null);
     if (res === null) {
-      toast.danger("Zurücksetzen fehlgeschlagen — die API ist nicht erreichbar.");
+      toast.danger("Zurücksetzen fehlgeschlagen, die API ist nicht erreichbar.");
       return;
     }
     if (res.ok) {
@@ -212,7 +212,7 @@ export default function UsersAdmin() {
       else toast.danger(`Löschen fehlgeschlagen (HTTP ${res.status}).`);
     } catch {
       setPendingDelete(null);
-      toast.danger("Löschen fehlgeschlagen — die API ist nicht erreichbar.");
+      toast.danger("Löschen fehlgeschlagen, die API ist nicht erreichbar.");
     } finally {
       setDeleting(false);
     }
@@ -452,7 +452,7 @@ function UserForm({
 
       {isAdmin ? (
         <p className="text-xs opacity-60">
-          Admins haben vollen Zugriff — Firmen-Zuordnungen &amp; Portal-Berechtigungen entfallen.
+          Admins haben vollen Zugriff: Firmen-Zuordnungen &amp; Portal-Berechtigungen entfallen.
         </p>
       ) : (
         <div className="space-y-4">
@@ -468,7 +468,7 @@ function UserForm({
             </button>
           </div>
           {memberships.length === 0 ? (
-            <p className="text-xs opacity-60">Keine Firma zugeordnet — dieses Konto kann sich anmelden, sieht aber kein Portal.</p>
+            <p className="text-xs opacity-60">Keine Firma zugeordnet, dieses Konto kann sich anmelden, sieht aber kein Portal.</p>
           ) : null}
           {memberships.map((m, i) => (
             <div key={m.customerId} className="tds-card p-3 space-y-3">
@@ -510,8 +510,8 @@ function UserForm({
                   <span className="text-sm">Firmenadmin</span>
                   <span className="text-xs opacity-70">
                     {delegation.get(m.customerId) === false
-                      ? "Für diese Firma nicht freigeschaltet — Firmen-Kontingente → „Firmenadmins zulassen“."
-                      : "Darf die Benutzer DIESER Firma selbst verwalten (Seite „Meine Firma“) — begrenzt durch die Rechte, die der Firma freigegeben sind."}
+                      ? "Für diese Firma nicht freigeschaltet: Firmen-Kontingente → „Firmenadmins zulassen“."
+                      : "Darf die Benutzer DIESER Firma selbst verwalten (Seite „Meine Firma“), begrenzt durch die Rechte, die der Firma freigegeben sind."}
                   </span>
                 </span>
               </label>

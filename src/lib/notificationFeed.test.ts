@@ -214,7 +214,7 @@ describe("restraint", () => {
     expect(frontendFetch.mock.calls.length).toBe(after);
   });
 
-  it("STOPS on a 403 too — a principal does not gain rights mid-session", async () => {
+  it("STOPS on a 403 too, a principal does not gain rights mid-session", async () => {
     vi.useFakeTimers();
     frontendFetch.mockResolvedValue(ok({}, 403));
     stop = initNotificationFeed({ target: "admin", pollMs: 1000 });

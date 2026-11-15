@@ -106,7 +106,7 @@ describe("revealNav", () => {
     expect(hidden("odd")).toBe(true);
   });
 
-  it("keeps /firma hidden for anyone who belongs to no company — platform admin included", async () => {
+  it("keeps /firma hidden for anyone who belongs to no company, platform admin included", async () => {
     // "Meine Firma" is the company-INTERNAL view. Without a membership there is
     // no "meine Firma" to show, and the row would name someone else's company.
     document.body.innerHTML = `<a id="firma" data-reveal-for="company-or-platform-admin" hidden>Meine Firma</a>`;

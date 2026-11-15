@@ -66,7 +66,7 @@ export default function StripeSettings() {
       setStatus((await res.json()) as StripeStatus);
       setError(null);
     } catch {
-      setError("Stripe-Status konnte nicht geladen werden — die API ist nicht erreichbar.");
+      setError("Stripe-Status konnte nicht geladen werden, die API ist nicht erreichbar.");
     } finally {
       setLoaded(true);
     }
@@ -78,7 +78,7 @@ export default function StripeSettings() {
 
   const save = async () => {
     if (key.trim() === "") {
-      toast.info("Kein neuer Schlüssel eingegeben — der bestehende bleibt.");
+      toast.info("Kein neuer Schlüssel eingegeben, der bestehende bleibt.");
       return;
     }
     setBusy(true);
@@ -97,7 +97,7 @@ export default function StripeSettings() {
         toast.danger(data?.error ?? `Speichern fehlgeschlagen (HTTP ${res.status}).`);
       }
     } catch {
-      toast.danger("Speichern fehlgeschlagen — die API ist nicht erreichbar.");
+      toast.danger("Speichern fehlgeschlagen, die API ist nicht erreichbar.");
     } finally {
       setBusy(false);
     }
@@ -117,7 +117,7 @@ export default function StripeSettings() {
         );
       }
     } catch {
-      setTestError("Test fehlgeschlagen — die API ist nicht erreichbar.");
+      setTestError("Test fehlgeschlagen, die API ist nicht erreichbar.");
     } finally {
       setTesting(false);
     }

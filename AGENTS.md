@@ -32,6 +32,7 @@ npm run type-check:extensions    # local only: type-checks every sibling tds-ext
 - No multi-line `{/* … */}` in `Layout.astro`'s template body.
 - `src/styles/global.css` imports `tailwindcss/index.css`; never `@tailwindcss/vite`.
 - Release this package before the products that depend on its changes.
+- Follows the TDS quality standard (`../tds-ops/standards/quality.md`): no AI slop, clean code.
 
 ## Topic files
 

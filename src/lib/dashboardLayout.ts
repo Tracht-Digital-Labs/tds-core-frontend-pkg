@@ -172,7 +172,7 @@ export function initDashboardLayout(): void {
         }
       })
       .catch(() => {
-        toast.danger("Layout konnte nicht gespeichert werden — die API ist nicht erreichbar.");
+        toast.danger("Layout konnte nicht gespeichert werden, die API ist nicht erreichbar.");
       })
       .finally(() => {
         saveBtn.disabled = false;

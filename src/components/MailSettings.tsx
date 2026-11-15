@@ -103,7 +103,7 @@ export default function MailSettings() {
       setStatus(statusRes.ok ? ((await statusRes.json()) as MailStatus) : null);
       setError(null);
     } catch {
-      setError("Einstellungen konnten nicht geladen werden — die API ist nicht erreichbar.");
+      setError("Einstellungen konnten nicht geladen werden, die API ist nicht erreichbar.");
     } finally {
       setLoaded(true);
     }
@@ -141,7 +141,7 @@ export default function MailSettings() {
         toast.danger(`Speichern fehlgeschlagen (HTTP ${res.status}).`);
       }
     } catch {
-      toast.danger("Speichern fehlgeschlagen — die API ist nicht erreichbar.");
+      toast.danger("Speichern fehlgeschlagen, die API ist nicht erreichbar.");
     } finally {
       setBusy(false);
     }
@@ -167,7 +167,7 @@ export default function MailSettings() {
         );
       }
     } catch {
-      setTestError("Versand fehlgeschlagen — die API ist nicht erreichbar.");
+      setTestError("Versand fehlgeschlagen, die API ist nicht erreichbar.");
     } finally {
       setTesting(false);
     }
@@ -206,7 +206,7 @@ export default function MailSettings() {
       {status?.source === "env" ? (
         <p className="marginalia">
           Der Versand läuft derzeit über die <code>MAIL_DSN</code> auf dem Host. Sobald hier ein
-          Server eingetragen und gespeichert ist, gilt diese Einstellung — die <code>.env</code>{" "}
+          Server eingetragen und gespeichert ist, gilt diese Einstellung, die <code>.env</code>{" "}
           bleibt nur noch Rückfallebene.
         </p>
       ) : null}
@@ -348,7 +348,7 @@ export default function MailSettings() {
         </button>
       </div>
       <p className="marginalia">
-        Der Test verwendet die <strong>gespeicherte</strong> Konfiguration — vorher speichern.
+        Der Test verwendet die <strong>gespeicherte</strong> Konfiguration, vorher speichern.
         Erfolg heißt: der SMTP-Server hat die Mail angenommen.
       </p>
     </div>

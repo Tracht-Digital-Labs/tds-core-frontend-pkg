@@ -90,7 +90,7 @@ export default function ModulesAdmin({ modules }: Props) {
         </table>
         {modules.length === 0 ? (
           <p className="tds-empty">
-            Keine Module gefunden — dieser Build enthält kein auflösbares Produkt-Inventar.
+            Keine Module gefunden, dieser Build enthält kein auflösbares Produkt-Inventar.
           </p>
         ) : null}
       </div>

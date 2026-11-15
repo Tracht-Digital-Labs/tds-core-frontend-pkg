@@ -82,13 +82,13 @@ describe("login URL", () => {
     expect(LOGIN_URL).toBe("http://localhost:4321");
   });
 
-  it("has no trailing slash — `?next=` is appended directly", async () => {
+  it("has no trailing slash: `?next=` is appended directly", async () => {
     // `${LOGIN_URL}?next=…` would otherwise produce a double slash.
     const { LOGIN_URL } = await loadTarget({});
     expect(LOGIN_URL.endsWith("/")).toBe(false);
   });
 
-  it("is not an in-app route — login lives on the central site", async () => {
+  it("is not an in-app route, login lives on the central site", async () => {
     const { LOGIN_URL } = await loadTarget({});
     expect(LOGIN_URL.startsWith("http")).toBe(true);
   });

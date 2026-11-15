@@ -139,7 +139,7 @@ describe("pre-paint gate backdrop", () => {
       for (const [i, ch] of channels.entries()) {
         expect(
           Math.abs(literal[i] - midpoint[i]),
-          `${theme} fallback ${ch}: ${literal[i]} vs computed canvas ${midpoint[i].toFixed(1)} — ` +
+          `${theme} fallback ${ch}: ${literal[i]} vs computed canvas ${midpoint[i].toFixed(1)}: ` +
             `the --tds-panel-canvas formula moved, re-derive the literal in Layout.astro`,
         ).toBeLessThanOrEqual(3);
       }

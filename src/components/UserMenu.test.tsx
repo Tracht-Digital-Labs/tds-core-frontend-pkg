@@ -190,7 +190,7 @@ describe("UserMenu", () => {
  * A login can hold a different role in each company it belongs to, so picking
  * the wrong one is not a cosmetic error — it scopes every list in the panel.
  */
-describe("UserMenu — Firmenwechsler", () => {
+describe("UserMenu: Firmenwechsler", () => {
   const TWO = {
     ...ME,
     companies: [

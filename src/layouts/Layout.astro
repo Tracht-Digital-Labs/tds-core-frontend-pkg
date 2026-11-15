@@ -47,7 +47,7 @@ interface Props {
 
 const {
   title,
-  description = "Internes Panel — Tracht Digital Solutions.",
+  description = "Internes Panel: Tracht Digital Solutions.",
   lang = "de",
   bare = false,
 } = Astro.props;
@@ -247,7 +247,7 @@ const mainTransition = { forwards: pageSwap, backwards: pageSwap };
      styling value FRONTEND_TARGET is allowed to drive: management reads the
      brand navy, the customer portal reads teal, so a user with both open
      knows at a glance which surface they are on. Everything else about the
-     two products stays identical — one shell, one component set, one
+     two products stays identical, one shell, one component set, one
      geometry. The accent is a single token block in surfaces/panel.css
      ([data-surface="panel"][data-frontend="customer"]); no component
      anywhere branches on the target. -->
@@ -512,7 +512,7 @@ const mainTransition = { forwards: pageSwap, backwards: pageSwap };
           <!-- The rail's neighbour is a COLUMN, not the page itself: the top
                bar has to sit above the canvas and stick while it scrolls.
                `min-w-0` on the column is what keeps a wide table inside it
-               from pushing the whole layout out — `body { overflow-x: hidden }`
+               from pushing the whole layout out: `body { overflow-x: hidden }`
                would then clip it silently rather than scrolling it. -->
           <div class="flex flex-col min-w-0 flex-1">
             <header class="panel-topbar hidden lg:flex">

@@ -180,7 +180,7 @@ describe("initPreferences", () => {
     });
   });
 
-  it("is idempotent — a layout script runs on every page", async () => {
+  it("is idempotent, a layout script runs on every page", async () => {
     // A second listener would double every save.
     const fetchMock = vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) =>
       init?.method === "PUT" ? jsonResponse({ ok: true }) : jsonResponse({ preferences: {} }),

@@ -144,7 +144,7 @@ describe("fetchMe", () => {
   });
 });
 
-describe("frontendFetch — the 401 backstop", () => {
+describe("frontendFetch, the 401 backstop", () => {
   const API = "https://api.tracht-digital.de/tickets";
 
   it("sends the session cookie", async () => {

@@ -189,7 +189,7 @@ describe("the rename transition", () => {
     });
   });
 
-  it("still reads a `customers`-only body — the legacy API never learns the new name", async () => {
+  it("still reads a `customers`-only body, the legacy API never learns the new name", async () => {
     route({
       [COMPOSED]: response(500, {}),
       [LEGACY]: response(200, { customers: [{ id: 7, name: "Beta GmbH" }] }),

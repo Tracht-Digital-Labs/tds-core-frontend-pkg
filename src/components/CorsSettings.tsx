@@ -82,7 +82,7 @@ export default function CorsSettings() {
       setDraft((data.custom ?? []).join("\n"));
       setError(null);
     } catch {
-      setError("Origins konnten nicht geladen werden — die API ist nicht erreichbar.");
+      setError("Origins konnten nicht geladen werden, die API ist nicht erreichbar.");
     } finally {
       setLoaded(true);
     }
@@ -118,12 +118,12 @@ export default function CorsSettings() {
       setDraft((data.saved ?? []).join("\n"));
       setRejected(data.rejected ?? []);
       if ((data.rejected ?? []).length > 0) {
-        toast.warning("Gespeichert — einzelne Einträge wurden abgelehnt.");
+        toast.warning("Gespeichert, einzelne Einträge wurden abgelehnt.");
       } else {
         toast.success("Gespeichert.");
       }
     } catch {
-      toast.danger("Speichern fehlgeschlagen — die API ist nicht erreichbar.");
+      toast.danger("Speichern fehlgeschlagen, die API ist nicht erreichbar.");
     } finally {
       setBusy(false);
     }
@@ -137,14 +137,14 @@ export default function CorsSettings() {
 
       {status && !status.store_available ? (
         <p className="tds-alert tds-alert--warning">
-          Noch keine Datenbank konfiguriert — es gelten nur die fest eingebauten Origins und die{" "}
+          Noch keine Datenbank konfiguriert, es gelten nur die fest eingebauten Origins und die{" "}
           <code>.env</code> des Hosts. Eigene Einträge lassen sich erst danach speichern.
         </p>
       ) : null}
 
       <p className="marginalia">
         Nur Browser-Anfragen von diesen Herkünften dürfen die API lesen. Die fest eingebauten
-        Adressen der eigenen Seiten lassen sich nicht entfernen — sonst könnte eine Änderung hier
+        Adressen der eigenen Seiten lassen sich nicht entfernen, sonst könnte eine Änderung hier
         genau die Oberfläche aussperren, die sie zurücknehmen müsste.
       </p>
 
@@ -173,7 +173,7 @@ export default function CorsSettings() {
       </label>
 
       <p className="marginalia">
-        Schema, Host und gegebenenfalls Port — kein Pfad und kein Schrägstrich am Ende
+        Schema, Host und gegebenenfalls Port, kein Pfad und kein Schrägstrich am Ende
         (<code>https://kunde.example</code>, nicht <code>https://kunde.example/</code>). Verglichen
         wird exakt, ein knapp danebenliegender Eintrag gibt also dauerhaft nichts frei. Ein
         <code> *</code> ist nicht möglich: zusammen mit Sitzungs-Cookies verbietet der Standard den
@@ -186,7 +186,7 @@ export default function CorsSettings() {
           <ul>
             {rejected.map((entry) => (
               <li key={entry.value}>
-                <code>{entry.value}</code> — {entry.reason}
+                <code>{entry.value}</code>: {entry.reason}
               </li>
             ))}
           </ul>
@@ -200,7 +200,7 @@ export default function CorsSettings() {
       </div>
 
       <p className="marginalia">
-        Die Änderung gilt sofort für die nächste Anfrage — ein neues Deployment ist nicht nötig.
+        Die Änderung gilt sofort für die nächste Anfrage, ein neues Deployment ist nicht nötig.
       </p>
     </div>
   );

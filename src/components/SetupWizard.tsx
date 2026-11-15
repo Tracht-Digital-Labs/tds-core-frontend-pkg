@@ -16,7 +16,7 @@ const STATE: Record<SetupItem["state"], { label: string; chip: string }> = {
 };
 
 const DONE_TOAST: Record<SetupAction, string> = {
-  snooze: "Verschoben — die Erinnerung kommt bei der nächsten Anmeldung wieder.",
+  snooze: "Verschoben, die Erinnerung kommt bei der nächsten Anmeldung wieder.",
   ignore: "Ignoriert. Unter „Ignoriert“ lässt sich das zurückholen.",
   restore: "Wieder in der Liste.",
 };

@@ -410,7 +410,7 @@ export default function CompanyUsersAdmin() {
               <span className="flex flex-col">
                 <span className="text-sm">Firmenadmin</span>
                 <span className="text-xs" style={{ color: "var(--color-muted)" }}>
-                  Darf die Benutzer dieser Firma verwalten — also auch diese Seite hier.
+                  Darf die Benutzer dieser Firma verwalten, also auch diese Seite hier.
                 </span>
               </span>
             </label>
