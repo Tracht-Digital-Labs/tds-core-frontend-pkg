@@ -332,7 +332,7 @@ export default function CompanyUsersAdmin() {
               />
               {editingId === "new" && (
                 <span className="text-xs" style={{ color: "var(--color-muted)" }}>
-                  Existiert bereits ein Konto mit dieser Adresse, wird es Ihrer Firma hinzugefügt —
+                  Existiert bereits ein Konto mit dieser Adresse, wird es Ihrer Firma hinzugefügt;
                   eine Person braucht keine zweite Anmeldung.
                 </span>
               )}
