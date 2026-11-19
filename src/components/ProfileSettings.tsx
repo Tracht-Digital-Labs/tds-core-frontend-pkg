@@ -7,15 +7,15 @@ import {
   TabPanel,
   Tabs,
   toast,
-} from "@tracht-digital-solutions/tds-shared/components";
+} from "@tracht-digital-labs/tds-shared/components";
 import {
   applyThemePreference,
   readThemePreference,
-} from "@tracht-digital-solutions/tds-shared/theme";
-import type { ThemePreference } from "@tracht-digital-solutions/tds-shared/design";
-import { Presence, TabIndicator } from "@tracht-digital-solutions/tds-shared/motion/react";
-import { formatDateTime } from "@tracht-digital-solutions/tds-shared/format";
-import { FileDropZone } from "@tracht-digital-solutions/tds-shared/dropzone";
+} from "@tracht-digital-labs/tds-shared/theme";
+import type { ThemePreference } from "@tracht-digital-labs/tds-shared/design";
+import { Presence, TabIndicator } from "@tracht-digital-labs/tds-shared/motion/react";
+import { formatDateTime } from "@tracht-digital-labs/tds-shared/format";
+import { FileDropZone } from "@tracht-digital-labs/tds-shared/dropzone";
 
 import {
   AUTH_API_URL,

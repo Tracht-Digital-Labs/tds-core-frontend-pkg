@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { TOAST_EVENT, type ToastDetail } from "@tracht-digital-solutions/tds-shared/toast";
+import { TOAST_EVENT, type ToastDetail } from "@tracht-digital-labs/tds-shared/toast";
 
 /**
  * The dashboard renders EVERY enabled widget at build time; this module then

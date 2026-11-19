@@ -12,7 +12,7 @@
  *
  * ### The panel keeps its own drawer on purpose
  *
- * `@tracht-digital-solutions/tds-shared/nav` carries `mountMobileNav`, which
+ * `@tracht-digital-labs/tds-shared/nav` carries `mountMobileNav`, which
  * the three public sites share. This shell is the documented non-consumer: a
  * dashboard with ~30 entries across six colour-coded zones is an off-canvas
  * drawer, not a dropdown sheet, and converging the two would mean giving one

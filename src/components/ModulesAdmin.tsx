@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FormAlert, Spinner } from "@tracht-digital-solutions/tds-shared/components";
+import { FormAlert, Spinner } from "@tracht-digital-labs/tds-shared/components";
 import { API_BASE, frontendFetch } from "../lib/auth";
 import type { ModuleEntry } from "../lib/moduleInventory";
 
@@ -49,8 +49,12 @@ export default function ModulesAdmin({ modules }: Props) {
     };
   }, []);
 
+  // Composer packages keep the vendor `tracht-digital-solutions` although the npm
+  // scope moved to `@tracht-digital-labs` with the organisation rename.
   const backendVersion = (pkg: string): string | null =>
-    backend?.packages?.[pkg.replace(/^@/, "")] ?? null;
+    backend?.packages?.[
+      pkg.replace(/^@tracht-digital-labs\//, "tracht-digital-solutions/").replace(/^@/, "")
+    ] ?? null;
 
   return (
     <div className="tds-stack">

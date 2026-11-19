@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { THEME_ATTRIBUTE, THEME_STORAGE_KEY } from "@tracht-digital-solutions/tds-shared/design";
+import { THEME_ATTRIBUTE, THEME_STORAGE_KEY } from "@tracht-digital-labs/tds-shared/design";
 
 const API = "https://api.test";
 
@@ -168,7 +168,7 @@ describe("initPreferences", () => {
     const { initPreferences } = await load();
     initPreferences();
 
-    const { applyThemePreference } = await import("@tracht-digital-solutions/tds-shared/theme");
+    const { applyThemePreference } = await import("@tracht-digital-labs/tds-shared/theme");
     applyThemePreference("dark");
 
     await vi.waitFor(() =>
@@ -192,7 +192,7 @@ describe("initPreferences", () => {
     initPreferences();
     initPreferences();
 
-    const { applyThemePreference } = await import("@tracht-digital-solutions/tds-shared/theme");
+    const { applyThemePreference } = await import("@tracht-digital-labs/tds-shared/theme");
     applyThemePreference("dark");
 
     await vi.waitFor(() =>

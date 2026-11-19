@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { FormAlert, Spinner, toast } from "@tracht-digital-solutions/tds-shared/components";
-import { copyText } from "@tracht-digital-solutions/tds-shared/clipboard";
+import { FormAlert, Spinner, toast } from "@tracht-digital-labs/tds-shared/components";
+import { copyText } from "@tracht-digital-labs/tds-shared/clipboard";
 import { API_BASE, frontendFetch } from "../lib/auth";
 
 interface Webhook {

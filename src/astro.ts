@@ -21,7 +21,7 @@ import type { ModuleEntry } from "./lib/moduleInventory.js";
  * It also serves one virtual module of its own — `virtual:frontend-modules`, the
  * composed package inventory the Module page renders. See {@link readInventory}.
  */
-const PKG = "@tracht-digital-solutions/tds-core-frontend";
+const PKG = "@tracht-digital-labs/tds-core-frontend";
 
 const BASE_ROUTES: ReadonlyArray<{
   pattern: string;
@@ -76,7 +76,7 @@ export const BASE_ROUTE_PATTERNS: readonly string[] = BASE_ROUTES.map((route) =>
 export const MODULES_MODULE_ID = "virtual:frontend-modules";
 
 /** Scope every platform package shares. */
-const SCOPE = "@tracht-digital-solutions/";
+const SCOPE = "@tracht-digital-labs/";
 
 /** German display names for the packages that are not feature modules. */
 const PLATFORM_NAMES: Readonly<Record<string, string>> = {

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { FormAlert, Spinner } from "@tracht-digital-solutions/tds-shared/components";
-import { renderMarkdown } from "@tracht-digital-solutions/tds-shared/markdown";
+import { FormAlert, Spinner } from "@tracht-digital-labs/tds-shared/components";
+import { renderMarkdown } from "@tracht-digital-labs/tds-shared/markdown";
 import { API_BASE, frontendFetch } from "../lib/auth";
 
 /**

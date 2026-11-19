@@ -97,7 +97,7 @@ so a new extension is colour-coded without a contract change.
 
 - The page swap fades **only `<main>`** (`transition:name="tds-main"`, `--tds-dur-*` / `--tds-ease-out`). Never name
   the rail, top bar or drawer. Reduced motion is handled in tds-shared's `base.css`.
-- Islands animate via `@tracht-digital-solutions/tds-shared/motion/react`, never `motion` directly:
+- Islands animate via `@tracht-digital-labs/tds-shared/motion/react`, never `motion` directly:
   card lists → `AnimatedList` / `AnimatedItem`; summary ↔ edit → `Presence`; an in-place form → `Collapse`; chip
   tabs → `tds-tab` + `TabIndicator`.
 - Tables stay static (transforms on `<tr>` render unreliably).

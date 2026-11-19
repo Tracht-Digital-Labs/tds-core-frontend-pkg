@@ -13,8 +13,8 @@ import {
   LiveChatCta,
   ThemeToggle,
   ToastHost,
-} from "@tracht-digital-solutions/tds-shared/components";
-import { errorBounceScript, offscreenAnimationScript, themeBootstrapScript } from "@tracht-digital-solutions/tds-shared/astro";
+} from "@tracht-digital-labs/tds-shared/components";
+import { errorBounceScript, offscreenAnimationScript, themeBootstrapScript } from "@tracht-digital-labs/tds-shared/astro";
 // Client-side navigation. See the CLIENT-SIDE NAVIGATION note further down for
 // the four things it changes about how this shell has to be written.
 import { ClientRouter } from "astro:transitions";
@@ -578,12 +578,12 @@ const mainTransition = { forwards: pageSwap, backwards: pageSwap };
           import {
             setRequestHeadersProvider,
             setUnauthorizedHandler,
-          } from "@tracht-digital-solutions/tds-shared/api";
+          } from "@tracht-digital-labs/tds-shared/api";
           import { onUnauthorized } from "../lib/auth";
           import { actAsHeaders } from "../lib/activeCompany";
           import { initNotificationFeed } from "../lib/notificationFeed";
           import { initPreferences } from "../lib/preferences";
-          import { mountNavProgress } from "@tracht-digital-solutions/tds-shared/nav";
+          import { mountNavProgress } from "@tracht-digital-labs/tds-shared/nav";
           import { FRONTEND_TARGET } from "../config/target";
 
           // Extension islands call the API through tds-shared's `apiFetch`,

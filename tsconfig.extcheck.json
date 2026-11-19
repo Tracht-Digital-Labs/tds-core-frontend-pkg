@@ -33,12 +33,12 @@
       "react": ["./node_modules/@types/react"],
       "react/*": ["./node_modules/@types/react/*"],
       "react-dom": ["./node_modules/@types/react-dom"],
-      "@tracht-digital-solutions/tds-shared": ["./node_modules/@tracht-digital-solutions/tds-shared/dist/index.d.ts"],
-      "@tracht-digital-solutions/tds-shared/components": ["./node_modules/@tracht-digital-solutions/tds-shared/dist/components/index.d.ts"],
-      "@tracht-digital-solutions/tds-shared/design": ["./node_modules/@tracht-digital-solutions/tds-shared/dist/design/index.d.ts"],
-      "@tracht-digital-solutions/tds-shared/i18n": ["./node_modules/@tracht-digital-solutions/tds-shared/dist/i18n/index.d.ts"],
-      "@tracht-digital-solutions/tds-shared/permissions": ["./node_modules/@tracht-digital-solutions/tds-shared/dist/permissions/index.d.ts"],
-      "@tracht-digital-solutions/tds-shared/schemas": ["./node_modules/@tracht-digital-solutions/tds-shared/dist/schemas/index.d.ts"]
+      "@tracht-digital-labs/tds-shared": ["./node_modules/@tracht-digital-labs/tds-shared/dist/index.d.ts"],
+      "@tracht-digital-labs/tds-shared/components": ["./node_modules/@tracht-digital-labs/tds-shared/dist/components/index.d.ts"],
+      "@tracht-digital-labs/tds-shared/design": ["./node_modules/@tracht-digital-labs/tds-shared/dist/design/index.d.ts"],
+      "@tracht-digital-labs/tds-shared/i18n": ["./node_modules/@tracht-digital-labs/tds-shared/dist/i18n/index.d.ts"],
+      "@tracht-digital-labs/tds-shared/permissions": ["./node_modules/@tracht-digital-labs/tds-shared/dist/permissions/index.d.ts"],
+      "@tracht-digital-labs/tds-shared/schemas": ["./node_modules/@tracht-digital-labs/tds-shared/dist/schemas/index.d.ts"]
     }
   },
   "include": ["../tds-ext-*-pkg/islands/**/*.tsx"],

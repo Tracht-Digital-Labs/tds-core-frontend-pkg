@@ -23,15 +23,15 @@
    The @fontsource imports live in Layout.astro, NOT here — @tailwindcss/postcss
    inlines CSS @imports without rebasing the packages' relative
    url(./files/*.woff2) refs, so Vite never emits the woff2. */
-@import "@tracht-digital-solutions/tds-shared/styles/base.css";
-@import "@tracht-digital-solutions/tds-shared/styles/primitives.css";
-@import "@tracht-digital-solutions/tds-shared/styles/app.css";
-@import "@tracht-digital-solutions/tds-shared/styles/surfaces/panel.css";
+@import "@tracht-digital-labs/tds-shared/styles/base.css";
+@import "@tracht-digital-labs/tds-shared/styles/primitives.css";
+@import "@tracht-digital-labs/tds-shared/styles/app.css";
+@import "@tracht-digital-labs/tds-shared/styles/surfaces/panel.css";
 
 /* Tailwind v4 ignores node_modules by default — but this stylesheet ships INSIDE
    the host package and the shell/extension classes live in sibling packages. From
    `<scope>/tds-core-frontend/src/styles/global.css`, `../../../` is the
-   `@tracht-digital-solutions/` scope dir, so this scans the host AND every
+   `@tracht-digital-labs/` scope dir, so this scans the host AND every
    extension package for classes. (@source must come after the @imports —
    before them it is a hard error.)
 

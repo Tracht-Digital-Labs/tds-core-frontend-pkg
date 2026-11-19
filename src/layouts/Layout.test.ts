@@ -37,7 +37,7 @@ const require_ = createRequire(import.meta.url);
  * manifest is not in the exports map.)
  */
 const sharedStyle = (subpath: string) =>
-  require_.resolve(`@tracht-digital-solutions/tds-shared/styles/${subpath}`);
+  require_.resolve(`@tracht-digital-labs/tds-shared/styles/${subpath}`);
 
 const layout = readFileSync(join(__dirname, "Layout.astro"), "utf8");
 const baseCss = readFileSync(sharedStyle("base.css"), "utf8");

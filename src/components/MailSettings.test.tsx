@@ -2,7 +2,7 @@
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { TOAST_EVENT, type ToastDetail } from "@tracht-digital-solutions/tds-shared/toast";
+import { TOAST_EVENT, type ToastDetail } from "@tracht-digital-labs/tds-shared/toast";
 import MailSettings from "./MailSettings";
 
 /**

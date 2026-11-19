@@ -6,7 +6,7 @@ import type { ModuleEntry } from "../lib/moduleInventory";
 
 const modules: ModuleEntry[] = [
   {
-    pkg: "@tracht-digital-solutions/tds-ext-blog-cms",
+    pkg: "@tracht-digital-labs/tds-ext-blog-cms",
     id: "blog-cms",
     name: "Blog-CMS",
     installed: "0.2.0",
@@ -14,7 +14,7 @@ const modules: ModuleEntry[] = [
     kind: "extension",
   },
   {
-    pkg: "@tracht-digital-solutions/tds-shared",
+    pkg: "@tracht-digital-labs/tds-shared",
     name: "Design- & i18n-Bibliothek",
     installed: "0.34.0",
     range: "^0.34.0",

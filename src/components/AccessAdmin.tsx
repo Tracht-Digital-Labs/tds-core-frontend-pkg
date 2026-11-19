@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TabPanel, Tabs } from "@tracht-digital-solutions/tds-shared/components";
+import { TabPanel, Tabs } from "@tracht-digital-labs/tds-shared/components";
 
 import CompanyQuotasAdmin from "./CompanyQuotasAdmin";
 import GroupsAdmin from "./GroupsAdmin";

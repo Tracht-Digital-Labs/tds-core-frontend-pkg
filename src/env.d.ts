@@ -8,19 +8,19 @@
 // behind keeps building), but the canonical names are `virtual:frontend-*` and
 // new code must use those.
 declare module "virtual:frontend-registry" {
-  import type { ComposedRegistry } from "@tracht-digital-solutions/tds-frontend-contract";
+  import type { ComposedRegistry } from "@tracht-digital-labs/tds-frontend-contract";
   export const registry: ComposedRegistry;
 }
 
 declare module "virtual:frontend-widgets" {
-  import type { WidgetManifest } from "@tracht-digital-solutions/tds-frontend-contract";
+  import type { WidgetManifest } from "@tracht-digital-labs/tds-frontend-contract";
   // Component is the resolved (Astro) component; typed loosely — the host just
   // renders it. Metadata rides along for permission gating + titles.
   export const widgets: Array<WidgetManifest & { Component: unknown }>;
 }
 
 declare module "virtual:frontend-settings" {
-  import type { SettingsPanel } from "@tracht-digital-solutions/tds-frontend-contract";
+  import type { SettingsPanel } from "@tracht-digital-labs/tds-frontend-contract";
   export const settings: Array<SettingsPanel & { Component: unknown }>;
 }
 

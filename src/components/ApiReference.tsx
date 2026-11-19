@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { FormAlert, Spinner } from "@tracht-digital-solutions/tds-shared/components";
+import { FormAlert, Spinner } from "@tracht-digital-labs/tds-shared/components";
 import { API_BASE, frontendFetch } from "../lib/auth";
 import type { ModuleEntry } from "../lib/moduleInventory";
 

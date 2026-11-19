@@ -4,8 +4,8 @@ import {
   FormAlert,
   Spinner,
   toast,
-} from "@tracht-digital-solutions/tds-shared/components";
-import { Collapse } from "@tracht-digital-solutions/tds-shared/motion/react";
+} from "@tracht-digital-labs/tds-shared/components";
+import { Collapse } from "@tracht-digital-labs/tds-shared/motion/react";
 
 import { fetchMe, membershipIds, type Me } from "../lib/auth";
 import { fetchCompanies, type Company } from "../lib/companies";

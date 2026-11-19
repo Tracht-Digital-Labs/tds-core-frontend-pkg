@@ -16,7 +16,7 @@ as its key; it self-hides unless live-chat-cta enables this frontend.
 - `coreFrontendBase()` injects the base pages; `BASE_ROUTE_PATTERNS` (from `./astro`) is the list the products'
   composition tests read.
 - **tds-shared is a peer dependency.** As a regular dependency, npm nested a second copy and the shell and the
-  extensions ran different versions (two toast hosts, two theme states). `npm ls @tracht-digital-solutions/tds-shared`
+  extensions ran different versions (two toast hosts, two theme states). `npm ls @tracht-digital-labs/tds-shared`
   in a product must show exactly one version.
 - **The products are server-rendered** (`@astrojs/node`, standalone, under Passenger): extensions are still
   folded in at build time; only rendering moved to request time. That buys honest 404s instead of the vhost's SPA
@@ -67,7 +67,7 @@ The router replaces `<body>`, which creates four contracts:
   progress bar has a server-rendered counterpart with a stable persist key in every body.
 - **The drawer's document key handler is registered once, element handlers per swap** (`lib/navDrawer.ts`).
 
-Extension islands read GET data through `@tracht-digital-solutions/tds-shared/data`: per-tab memory survives
+Extension islands read GET data through `@tracht-digital-labs/tds-shared/data`: per-tab memory survives
 swaps, a revisited list paints its last value then shows `.tds-stale` + `aria-busy` while revalidating.
 `invalidate()` after a mutation keeps the visible value. This is authenticated browser data, never the public
 sites' `tds-shared/cache`.

@@ -3,14 +3,14 @@ import {
   PORTAL_PERMISSIONS,
   PORTAL_PERMISSION_LABELS,
   type PortalPermission,
-} from "@tracht-digital-solutions/tds-shared/permissions";
-import { ConfirmDialog, FormAlert, Spinner, toast } from "@tracht-digital-solutions/tds-shared/components";
+} from "@tracht-digital-labs/tds-shared/permissions";
+import { ConfirmDialog, FormAlert, Spinner, toast } from "@tracht-digital-labs/tds-shared/components";
 import {
   AnimatedItem,
   AnimatedList,
   Collapse,
   Presence,
-} from "@tracht-digital-solutions/tds-shared/motion/react";
+} from "@tracht-digital-labs/tds-shared/motion/react";
 import { AUTH_API_URL, frontendFetch } from "../lib/auth";
 import { fetchCompanies, type Company } from "../lib/companies";
 import {

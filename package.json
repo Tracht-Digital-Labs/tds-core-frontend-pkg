@@ -1,5 +1,5 @@
 {
-  "name": "@tracht-digital-solutions/tds-core-frontend",
+  "name": "@tracht-digital-labs/tds-core-frontend",
   "version": "0.33.2",
   "description": "Base panel host for the TDS panel platform. Ships the shell (Layout, auth gate), base pages (dashboard, users, profile, company, modules, settings, wiki, error pages) + the coreFrontendBase Astro integration. Consumed by the product repos (tds-admin-frontend / tds-customer-frontend), each of which composes it with its own extension set + deploy pipeline.",
   "license": "UNLICENSED",
@@ -31,12 +31,12 @@
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
     "@fontsource-variable/plus-jakarta-sans": "^5.2.8",
     "@fontsource/lato": "^5.2.7",
-    "@tracht-digital-solutions/tds-frontend-contract": "^1.14.0"
+    "@tracht-digital-labs/tds-frontend-contract": "^1.14.0"
   },
   "peerDependencies": {
     "@astrojs/react": ">=6",
     "@tailwindcss/postcss": ">=4",
-    "@tracht-digital-solutions/tds-shared": ">=0.59.1 <1",
+    "@tracht-digital-labs/tds-shared": ">=0.59.1 <1",
     "astro": ">=6",
     "react": ">=18",
     "react-dom": ">=18",
@@ -46,7 +46,7 @@
     "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.6",
-    "@tracht-digital-solutions/tds-shared": "^0.67.1",
+    "@tracht-digital-labs/tds-shared": "^0.67.1",
     "@types/node": "^26.2.0",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.5",
@@ -63,6 +63,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Tracht-Digital-Solutions/tds-core-frontend-pkg.git"
+    "url": "git+https://github.com/Tracht-Digital-Labs/tds-core-frontend-pkg.git"
   }
 }

@@ -3,7 +3,7 @@ export type ModuleKind = "extension" | "platform";
 
 /** One installed package, captured from the product build. */
 export interface ModuleEntry {
-  /** npm package name, e.g. `@tracht-digital-solutions/tds-ext-blog-cms`. */
+  /** npm package name, e.g. `@tracht-digital-labs/tds-ext-blog-cms`. */
   pkg: string;
   /** Extension id from the manifest; absent for platform packages. */
   id?: string;

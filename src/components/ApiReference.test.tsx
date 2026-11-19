@@ -20,7 +20,7 @@ import type { ModuleEntry } from "../lib/moduleInventory";
 
 const inventory: ModuleEntry[] = [
   {
-    pkg: "@tracht-digital-solutions/tds-ext-support-tickets",
+    pkg: "@tracht-digital-labs/tds-ext-support-tickets",
     id: "support-tickets",
     name: "Support-Tickets",
     installed: "0.7.4",

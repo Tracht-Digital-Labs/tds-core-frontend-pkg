@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Spinner, toast } from "@tracht-digital-solutions/tds-shared/components";
+import { Spinner, toast } from "@tracht-digital-labs/tds-shared/components";
 
 import { chooseSetup, isOpen, loadSetupStatus, type SetupAction, type SetupItem, type SetupStatus } from "../lib/setupStatus";
 

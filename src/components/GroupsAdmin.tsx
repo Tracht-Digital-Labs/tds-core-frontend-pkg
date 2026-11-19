@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { ConfirmDialog, FormAlert, Spinner, toast } from "@tracht-digital-solutions/tds-shared/components";
-import { AnimatedItem, AnimatedList, Collapse } from "@tracht-digital-solutions/tds-shared/motion/react";
+import { ConfirmDialog, FormAlert, Spinner, toast } from "@tracht-digital-labs/tds-shared/components";
+import { AnimatedItem, AnimatedList, Collapse } from "@tracht-digital-labs/tds-shared/motion/react";
 
 import {
   createGroup,

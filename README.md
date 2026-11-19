@@ -1,7 +1,7 @@
 # tds-core-frontend-pkg
 
 The **base frontend host**, published as a package
-(`@tracht-digital-solutions/tds-core-frontend`). It ships the shell (chrome,
+(`@tracht-digital-labs/tds-core-frontend`). It ships the shell (chrome,
 pre-paint auth gate, nav), the **base pages** (Dashboard/widget host, user
 management, Module = read-only Inventar, Einstellungen inkl. **E-Mail (SMTP)**
 im Admin-Build, Wiki = API-Referenz im
@@ -19,10 +19,10 @@ each of which composes this host with its own extension set + deploy pipeline.
 // astro.config.mjs
 import react from "@astrojs/react";
 import node from "@astrojs/node";
-import { coreFrontendBase } from "@tracht-digital-solutions/tds-core-frontend/astro";
-import { frontendHost } from "@tracht-digital-solutions/tds-frontend-contract/astro";
-import { tdsViteBuild } from "@tracht-digital-solutions/tds-shared/astro";
-import timeTracker from "@tracht-digital-solutions/tds-ext-time-tracker";
+import { coreFrontendBase } from "@tracht-digital-labs/tds-core-frontend/astro";
+import { frontendHost } from "@tracht-digital-labs/tds-frontend-contract/astro";
+import { tdsViteBuild } from "@tracht-digital-labs/tds-shared/astro";
+import timeTracker from "@tracht-digital-labs/tds-ext-time-tracker";
 
 process.env.FRONTEND_TARGET = "admin"; // or "customer"
 process.env.PUBLIC_FRONTEND_TARGET = "admin";
@@ -66,7 +66,7 @@ body. A persisted progress bar gives honest feedback when the server render is
 not already prefetched.
 
 Extension islands can pair this with
-`@tracht-digital-solutions/tds-shared/data`: revisiting a GET-backed screen
+`@tracht-digital-labs/tds-shared/data`: revisiting a GET-backed screen
 paints the tab's previous value immediately and dims/pulses it while a fresh
 answer replaces it. Successful mutations call `invalidate(prefix)`; the old
 value remains visible, and an older in-flight GET cannot overwrite the save.

@@ -18,7 +18,7 @@
  * alternative — a poller per extension island — would mean thirteen timers on
  * every page.
  */
-import { toast } from "@tracht-digital-solutions/tds-shared/toast";
+import { toast } from "@tracht-digital-labs/tds-shared/toast";
 import { API_BASE, frontendFetch } from "./auth";
 
 /** How often to ask, while the tab is visible. */

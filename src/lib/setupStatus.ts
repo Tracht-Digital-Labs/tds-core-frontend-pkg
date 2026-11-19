@@ -1,4 +1,4 @@
-import type { SetupItem, SetupStatus } from "@tracht-digital-solutions/tds-frontend-contract";
+import type { SetupItem, SetupStatus } from "@tracht-digital-labs/tds-frontend-contract";
 
 import { API_BASE, frontendFetch } from "./auth";
 

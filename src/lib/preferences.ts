@@ -24,11 +24,11 @@
  * status, which is what separates "session expired" from "service down").
  */
 import { applyThemePreference, readThemePreference, startSystemThemeSync } from
-  "@tracht-digital-solutions/tds-shared/theme";
-import type { ThemePreference } from "@tracht-digital-solutions/tds-shared/design";
-import { THEME_CHANGE_EVENT } from "@tracht-digital-solutions/tds-shared/design";
-import type { ThemeChangeDetail } from "@tracht-digital-solutions/tds-shared/design";
-import { toast } from "@tracht-digital-solutions/tds-shared/toast";
+  "@tracht-digital-labs/tds-shared/theme";
+import type { ThemePreference } from "@tracht-digital-labs/tds-shared/design";
+import { THEME_CHANGE_EVENT } from "@tracht-digital-labs/tds-shared/design";
+import type { ThemeChangeDetail } from "@tracht-digital-labs/tds-shared/design";
+import { toast } from "@tracht-digital-labs/tds-shared/toast";
 
 import { API_BASE, frontendFetch } from "./auth";
 

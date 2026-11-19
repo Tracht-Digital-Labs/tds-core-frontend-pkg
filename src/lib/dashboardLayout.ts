@@ -10,8 +10,8 @@
  * Progressive enhancement: with no saved layout (or the API unreachable) every
  * widget stays visible in its default order — the dashboard always works.
  */
-import { cssEase, durations } from "@tracht-digital-solutions/tds-shared/motion";
-import { toast } from "@tracht-digital-solutions/tds-shared/toast";
+import { cssEase, durations } from "@tracht-digital-labs/tds-shared/motion";
+import { toast } from "@tracht-digital-labs/tds-shared/toast";
 import { API_BASE, frontendFetch } from "./auth";
 
 /**

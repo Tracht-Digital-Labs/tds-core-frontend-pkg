@@ -16,7 +16,7 @@ import { coreFrontendBase, readInventory } from "./astro";
  */
 
 const repoRoot = new URL("..", import.meta.url);
-const PKG = "@tracht-digital-solutions/tds-core-frontend";
+const PKG = "@tracht-digital-labs/tds-core-frontend";
 
 /** Run the integration's config:setup hook and collect the injected routes. */
 function injectedRoutes(): { pattern: string; entrypoint: string; prerender?: boolean }[] {
@@ -178,9 +178,9 @@ beforeAll(() => {
       name: "tds-fake-frontend",
       dependencies: {
         astro: "^6.4.2",
-        "@tracht-digital-solutions/tds-shared": "^0.16.0",
-        "@tracht-digital-solutions/tds-ext-blog-cms": "^0.1.1",
-        "@tracht-digital-solutions/tds-ext-ghost": "^0.1.0",
+        "@tracht-digital-labs/tds-shared": "^0.16.0",
+        "@tracht-digital-labs/tds-ext-blog-cms": "^0.1.1",
+        "@tracht-digital-labs/tds-ext-ghost": "^0.1.0",
       },
     }),
   );
@@ -190,8 +190,8 @@ beforeAll(() => {
     mkdirSync(dir, { recursive: true });
     writeFileSync(join(dir, "package.json"), JSON.stringify({ name: pkg, version }));
   };
-  install("@tracht-digital-solutions/tds-shared", "0.16.0");
-  install("@tracht-digital-solutions/tds-ext-blog-cms", "0.1.29");
+  install("@tracht-digital-labs/tds-shared", "0.16.0");
+  install("@tracht-digital-labs/tds-ext-blog-cms", "0.1.29");
   // tds-ext-ghost is declared but deliberately NOT installed.
 
   fixtureRoot = pathToFileURL(fixtureDir + "/");
@@ -206,7 +206,7 @@ describe("module inventory", () => {
     const modules = await readInventory(fixtureRoot);
     const byPkg = new Map(modules.map((m) => [m.pkg, m]));
 
-    const ext = byPkg.get("@tracht-digital-solutions/tds-ext-blog-cms");
+    const ext = byPkg.get("@tracht-digital-labs/tds-ext-blog-cms");
     expect(ext?.installed).toBe("0.1.29");
     expect(ext?.range).toBe("^0.1.1");
     expect(ext?.kind).toBe("extension");
@@ -217,7 +217,7 @@ describe("module inventory", () => {
     // move on their own schedule and have no deploy button.
     return readInventory(fixtureRoot).then((modules) => {
       expect(modules.some((m) => m.pkg === "astro")).toBe(false);
-      expect(modules.every((m) => m.pkg.startsWith("@tracht-digital-solutions/"))).toBe(true);
+      expect(modules.every((m) => m.pkg.startsWith("@tracht-digital-labs/"))).toBe(true);
     });
   });
 
@@ -225,14 +225,14 @@ describe("module inventory", () => {
     // A missing node_modules entry must still produce a ROW: dropping it would
     // hide the one module whose install actually failed.
     const modules = await readInventory(fixtureRoot);
-    const missing = modules.find((m) => m.pkg === "@tracht-digital-solutions/tds-ext-ghost");
+    const missing = modules.find((m) => m.pkg === "@tracht-digital-labs/tds-ext-ghost");
     expect(missing).toBeDefined();
     expect(missing?.installed).toBe("");
   });
 
   it("falls back to a name derived from the package when the manifest will not import", async () => {
     const modules = await readInventory(fixtureRoot);
-    expect(modules.find((m) => m.pkg === "@tracht-digital-solutions/tds-ext-blog-cms")?.name).toBe("blog-cms");
+    expect(modules.find((m) => m.pkg === "@tracht-digital-labs/tds-ext-blog-cms")?.name).toBe("blog-cms");
   });
 
   it("sorts platform packages ahead of feature modules", async () => {

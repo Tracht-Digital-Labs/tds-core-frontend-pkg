@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Avatar } from "@tracht-digital-solutions/tds-shared/components";
+import { Avatar } from "@tracht-digital-labs/tds-shared/components";
 
 import {
   API_BASE,

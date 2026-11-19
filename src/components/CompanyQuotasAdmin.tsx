@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { FormAlert, Spinner, toast } from "@tracht-digital-solutions/tds-shared/components";
+import { FormAlert, Spinner, toast } from "@tracht-digital-labs/tds-shared/components";
 
 import {
   describeFailure,

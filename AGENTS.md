@@ -1,6 +1,6 @@
 # AGENTS.md — tds-core-frontend-pkg
 
-The **base frontend host** (`@tracht-digital-solutions/tds-core-frontend`): shell and chrome, the
+The **base frontend host** (`@tracht-digital-labs/tds-core-frontend`): shell and chrome, the
 pre-paint auth gate, nav, dashboard widget host, wiki, user and access management, settings framework,
 module inventory, and the API fetch wiring. Both panel products (`tds-admin-frontend`,
 `tds-customer-frontend`) compose it with their extension sets at build time and render it server-side.
