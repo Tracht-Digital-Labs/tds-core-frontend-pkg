@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FormAlert, Spinner, toast } from "@tracht-digital-labs/tds-shared/components";
+import { describeFailure, FormAlert, Spinner, toast } from "@tracht-digital-labs/tds-shared/components";
 import { API_BASE, frontendFetch } from "../lib/auth";
 
 interface Site {
@@ -77,11 +77,7 @@ export default function SitemapSettings() {
       try {
         const res = await frontendFetch(ENDPOINT);
         if (!res.ok) {
-          setError(
-            res.status === 401 || res.status === 403
-              ? "Nur für Administratoren."
-              : `Sites konnten nicht geladen werden (HTTP ${res.status}).`,
-          );
+          setError(describeFailure(res, "Sites konnten nicht geladen werden", { adminOnly: true }));
           return;
         }
         const data = (await res.json()) as SitesPayload;
@@ -93,7 +89,7 @@ export default function SitemapSettings() {
         setStored(data.sitemap_exclusions ?? {});
         apply(data, list);
       } catch {
-        setError("Sites konnten nicht geladen werden, die API ist nicht erreichbar.");
+        setError(describeFailure(null, "Sites konnten nicht geladen werden"));
       } finally {
         setLoaded(true);
       }
@@ -131,7 +127,7 @@ export default function SitemapSettings() {
       if ((data.rejected ?? []).length > 0) toast.warning("Gespeichert, einzelne Pfade wurden abgelehnt.");
       else toast.success("Gespeichert.");
     } catch {
-      toast.danger("Speichern fehlgeschlagen, die API ist nicht erreichbar.");
+      toast.danger(describeFailure(null, "Speichern fehlgeschlagen"));
     } finally {
       setBusy(false);
     }

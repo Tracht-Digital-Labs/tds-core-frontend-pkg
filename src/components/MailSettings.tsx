@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FormAlert, Spinner, toast } from "@tracht-digital-labs/tds-shared/components";
+import { describeFailure, FormAlert, Spinner, toast } from "@tracht-digital-labs/tds-shared/components";
 import { API_BASE, frontendFetch } from "../lib/auth";
 
 interface Masked {
@@ -82,12 +82,7 @@ export default function MailSettings() {
         frontendFetch(STATUS),
       ]);
       if (!settingsRes.ok) {
-        setError(
-          settingsRes.status === 401 || settingsRes.status === 403
-            ? "Nur für Administratoren."
-            : `Einstellungen konnten nicht geladen werden (HTTP ${settingsRes.status}).`,
-        );
-        setLoaded(true);
+        setError(describeFailure(settingsRes, "Einstellungen konnten nicht geladen werden", { adminOnly: true }));
         return;
       }
       const data = (await settingsRes.json()) as { settings?: Masked[] };
@@ -103,7 +98,7 @@ export default function MailSettings() {
       setStatus(statusRes.ok ? ((await statusRes.json()) as MailStatus) : null);
       setError(null);
     } catch {
-      setError("Einstellungen konnten nicht geladen werden, die API ist nicht erreichbar.");
+      setError(describeFailure(null, "Einstellungen konnten nicht geladen werden"));
     } finally {
       setLoaded(true);
     }
@@ -141,7 +136,7 @@ export default function MailSettings() {
         toast.danger(`Speichern fehlgeschlagen (HTTP ${res.status}).`);
       }
     } catch {
-      toast.danger("Speichern fehlgeschlagen, die API ist nicht erreichbar.");
+      toast.danger(describeFailure(null, "Speichern fehlgeschlagen"));
     } finally {
       setBusy(false);
     }
@@ -167,7 +162,7 @@ export default function MailSettings() {
         );
       }
     } catch {
-      setTestError("Versand fehlgeschlagen, die API ist nicht erreichbar.");
+      setTestError(describeFailure(null, "Versand fehlgeschlagen"));
     } finally {
       setTesting(false);
     }

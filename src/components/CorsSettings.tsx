@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FormAlert, Spinner, toast } from "@tracht-digital-labs/tds-shared/components";
+import { describeFailure, FormAlert, Spinner, toast } from "@tracht-digital-labs/tds-shared/components";
 import { API_BASE, frontendFetch } from "../lib/auth";
 
 type Source = "baseline" | "env" | "db";
@@ -69,12 +69,7 @@ export default function CorsSettings() {
     try {
       const res = await frontendFetch(ENDPOINT);
       if (!res.ok) {
-        setError(
-          res.status === 401 || res.status === 403
-            ? "Nur für Administratoren."
-            : `Origins konnten nicht geladen werden (HTTP ${res.status}).`,
-        );
-        setLoaded(true);
+        setError(describeFailure(res, "Origins konnten nicht geladen werden", { adminOnly: true }));
         return;
       }
       const data = (await res.json()) as CorsStatus;
@@ -82,7 +77,7 @@ export default function CorsSettings() {
       setDraft((data.custom ?? []).join("\n"));
       setError(null);
     } catch {
-      setError("Origins konnten nicht geladen werden, die API ist nicht erreichbar.");
+      setError(describeFailure(null, "Origins konnten nicht geladen werden"));
     } finally {
       setLoaded(true);
     }
@@ -123,7 +118,7 @@ export default function CorsSettings() {
         toast.success("Gespeichert.");
       }
     } catch {
-      toast.danger("Speichern fehlgeschlagen, die API ist nicht erreichbar.");
+      toast.danger(describeFailure(null, "Speichern fehlgeschlagen"));
     } finally {
       setBusy(false);
     }
