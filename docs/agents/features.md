@@ -71,8 +71,8 @@ the admin product under *Wiki-Inhalte* (`tds-ext-live-chat-cta-pkg`); the same r
 The nav row is platform-admin only (`revealFor: "platform-admin"`). One route, three tabs (Benutzer | Gruppen |
 Firmen-Kontingente); each panel mounts on first view and stays mounted.
 
-**Benutzer (`UsersAdmin.tsx`):** list, create, reset password, delete, and the per-user form (admin, support-agent
-and blog-author flags, status, company memberships). A membership has direct `permissions`, `groupIds`,
+**Benutzer (`UsersAdmin.tsx`):** list, create, reset password, delete, and the per-user form (`UserForm.tsx`: admin,
+support-agent and blog-author flags, status, one `MembershipEditor.tsx` per company; types in `lib/adminUsers.ts`). A membership has direct `permissions`, `groupIds`,
 `isCompanyAdmin` and an optional `permissionCeiling` (empty = inherit).
 
 - **`PermissionMatrix`** (shared with `/firma`) is tri-state per right: inherited from a group, granted, or
