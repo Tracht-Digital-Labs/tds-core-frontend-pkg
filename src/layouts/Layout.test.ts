@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 /**
  * The pre-paint auth gate's hard-coded colours.
  *
- * `Layout.astro` paints a full-screen backdrop BEFORE the CSS bundle loads, so
+ * `AuthGate.astro` paints a full-screen backdrop BEFORE the CSS bundle loads, so
  * it cannot use a class and cannot rely on any token being defined yet. It
  * writes `var(--tds-panel-canvas, #xxxxxx)`: the token when it exists, a
  * literal for the few milliseconds before it does.
@@ -40,6 +40,10 @@ const sharedStyle = (subpath: string) =>
   require_.resolve(`@tracht-digital-labs/tds-shared/styles/${subpath}`);
 
 const layout = readFileSync(join(__dirname, "Layout.astro"), "utf8");
+const component = (name: string) => readFileSync(join(__dirname, "..", "components", name), "utf8");
+const gate = component("AuthGate.astro");
+/** The layout and the chrome it renders, for rules about the whole shell. */
+const shell = [layout, ...["MobileTopBar.astro", "SidebarRail.astro", "NavDrawer.astro"].map(component)].join("\n");
 const baseCss = readFileSync(sharedStyle("base.css"), "utf8");
 const panelCss = readFileSync(sharedStyle("surfaces/panel.css"), "utf8");
 
@@ -100,8 +104,8 @@ const fallback = (theme: "light" | "dark"): RGB => {
     theme === "dark"
       ? /html\[data-theme="dark"\]\.auth-checking::before\s*\{[^}]*var\(--tds-panel-canvas,\s*(#[0-9a-f]{6})/i
       : /html\.auth-checking::before\s*\{[^}]*var\(--tds-panel-canvas,\s*(#[0-9a-f]{6})/i;
-  const hex = layout.match(re)?.[1];
-  if (!hex) throw new Error(`no ${theme} pre-paint fallback found in Layout.astro`);
+  const hex = gate.match(re)?.[1];
+  if (!hex) throw new Error(`no ${theme} pre-paint fallback found in AuthGate.astro`);
   return hexOf(hex);
 };
 
@@ -110,7 +114,7 @@ describe("pre-paint gate backdrop", () => {
     // The literal is the few-millisecond stand-in, never the primary value —
     // hard-coding the colour outright would freeze the gate at whatever the
     // canvas looked like the day it was written.
-    const uses = [...layout.matchAll(/\.auth-checking::before\s*\{[^}]*background:\s*([^;]+);/g)];
+    const uses = [...gate.matchAll(/\.auth-checking::before\s*\{[^}]*background:\s*([^;]+);/g)];
     expect(uses.length, "the gate's backdrop rules moved or were renamed").toBe(2);
     for (const [, value] of uses) {
       expect(value).toMatch(/^var\(--tds-panel-canvas,\s*#[0-9a-f]{6}\)$/i);
@@ -140,7 +144,7 @@ describe("pre-paint gate backdrop", () => {
         expect(
           Math.abs(literal[i] - midpoint[i]),
           `${theme} fallback ${ch}: ${literal[i]} vs computed canvas ${midpoint[i].toFixed(1)}: ` +
-            `the --tds-panel-canvas formula moved, re-derive the literal in Layout.astro`,
+            `the --tds-panel-canvas formula moved, re-derive the literal in AuthGate.astro`,
         ).toBeLessThanOrEqual(3);
       }
     },
@@ -150,7 +154,7 @@ describe("pre-paint gate backdrop", () => {
 /**
  * Client-side navigation wiring.
  *
- * `Layout.astro` is compiled by neither vitest nor `tsc`, so every rule below
+ * `.astro` files are compiled by neither vitest nor `tsc`, so every rule below
  * is invisible to the rest of the toolchain — the only other place they show up
  * is a browser, and three of the four fail *silently* there (a stale toast
  * host, a drawer that stops opening, a theme that flips on the first click).
@@ -169,7 +173,7 @@ describe("client-side navigation", () => {
     expect(layout).toMatch(/<main[^>]*transition:animate=\{mainTransition\}/);
     expect(layout).toContain('duration: "var(--tds-dur-base)"');
     expect(layout).toContain('easing: "var(--tds-ease-out)"');
-    expect(layout).not.toMatch(/<(header|aside|nav)[^>]*transition:name=/);
+    expect(shell).not.toMatch(/<(header|aside|nav)[^>]*transition:name=/);
   });
 
   it("persists the three pieces of chrome that must not restart", () => {
@@ -213,5 +217,17 @@ describe("client-side navigation", () => {
     expect(layout).toContain("mountNavProgress()");
     expect(layout).toContain('id="tds-nav-progress"');
     expect(layout).toContain('transition:persist="tds-nav-progress"');
+  });
+});
+
+describe("shell composition", () => {
+  it("gates every page except bare ones", () => {
+    expect(layout).toContain("{!bare && <AuthGate />}");
+  });
+
+  it("renders the rail and the drawer from the one nav model", () => {
+    expect(layout).toContain("<SidebarRail navSections={navSections} />");
+    expect(layout).toContain("<NavDrawer navSections={navSections} />");
+    expect(layout).toContain("buildNavSections(baseNav(FRONTEND_TARGET), registry.nav, Astro.url.pathname)");
   });
 });

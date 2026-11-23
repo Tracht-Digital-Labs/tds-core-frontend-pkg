@@ -1,0 +1,49 @@
+---
+/**
+ * The desktop rail (`lg` and up). `.portal-sidebar` is the fixed deep-navy
+ * panel from tds-shared's app.css: it re-maps --color-ink/-muted/-line/-soft/
+ * -card and --nav-hue within the panel, so every child reads light in BOTH
+ * themes. The collapse toggle is wired by lib/sidebarCollapse.ts.
+ */
+import BrandWordmark from "./BrandWordmark.astro";
+import Icon from "./Icon.astro";
+import NavList from "./NavList.astro";
+import { FRONTEND_TARGET } from "../config/target";
+import type { NavSection } from "../lib/navModel";
+
+interface Props {
+  navSections: NavSection[];
+}
+
+const { navSections } = Astro.props;
+---
+
+<aside class="portal-sidebar hidden lg:flex lg:flex-col w-60 shrink-0 border-r">
+  <div class="sidebar-head px-4 py-4 flex items-center gap-2">
+    <span class="sidebar-hide-collapsed"><BrandWordmark /></span>
+    <button
+      type="button"
+      class="btn btn-ghost ml-auto px-2"
+      data-sidebar-toggle
+      aria-controls="panel-nav"
+      aria-expanded="true"
+      aria-label="Navigation einklappen"
+    >
+      <span data-expanded-icon><Icon name="chevrons-left" /></span>
+      <span data-collapsed-icon hidden><Icon name="chevrons-right" /></span>
+    </button>
+  </div>
+  <div id="panel-nav" class="flex-1 overflow-y-auto">
+    <NavList sections={navSections} />
+  </div>
+  <div class="sidebar-foot mt-auto px-4 py-3 flex items-center gap-2">
+    <!-- The ThemeToggle moved to the top bar, where it sits next to
+         the profile menu that now owns the rest of "my account".
+         Two toggles on one page would be two controls for one
+         setting. The target label stays: it is the only thing in
+         the rail that says which product this is. -->
+    <span class="sidebar-hide-collapsed text-xs" style="color: var(--color-muted)">
+      {FRONTEND_TARGET === "customer" ? "Kundenportal" : "Management"}
+    </span>
+  </div>
+</aside>

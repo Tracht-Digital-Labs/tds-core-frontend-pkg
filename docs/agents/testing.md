@@ -18,7 +18,9 @@ type-check and `lint:primitives`; the products' release workflows don't, so this
 | `auth.test.ts` | The 401 backstop: a scoped 401 with a live `/me` returns to the caller and keeps the hint |
 | `target.test.ts` | Different `HINT_PREFIX` per product |
 | `astro.test.ts` | Every injected entrypoint exists on disk; the prerendered set is exactly `/404` and `/500` |
-| `Layout.test.ts` | Gate hex fallbacks against the installed tds-shared canvas |
+| `Layout.test.ts` | Gate hex fallbacks (in `AuthGate.astro`) against the installed tds-shared canvas; router, persisted chrome and script placement |
+| `astroCompile.test.ts` | Every `.astro` file compiles with Astro's own compiler, so a template error fails here rather than in a product build |
+| `baseNav.test.ts` | The base nav rows per product: admin-only rows, the wiki per target, reveal conditions |
 | `notificationFeed.test.ts` | Restraint: hidden tabs don't poll, 401/403 stops, transport failures aren't toasted, the cursor advances |
 | `dashboardLayout.test.ts` | Progressive enhancement (no layout / API error / unreachable → authored order); all four save branches via `tds:toast` |
 | `UsersAdmin.flows.test.tsx` | Every user-management action against a scripted auth API: payload, refusal messages per status, in-flow temporary passwords, membership/group/company-admin rules, one policy request per company. Mutation check: 23 breakages, 22 caught (jsdom trims e-mail inputs itself) |

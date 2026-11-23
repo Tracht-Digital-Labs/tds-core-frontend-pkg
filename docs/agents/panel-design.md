@@ -42,13 +42,13 @@ so a new extension is colour-coded without a contract change.
   `<BrandWordmark />`) from one resolved `navSections` model. Regression check on a build:
   `grep -o 'data-nav="[^"]*"' dist/index.html | sort | uniq -c` → every key exactly 2. (A bare
   `grep -c data-nav` also counts the drawer's three `data-nav-drawer-close` buttons.)
-- `NavList` takes active state pre-resolved (`item.active`); normalisation stays in `Layout.astro`'s `isActive`.
+- `NavList` takes active state pre-resolved (`item.active`); normalisation stays in `lib/navModel.ts`'s `isActivePath`.
 - `BrandWordmark` is the only consumer of `BRAND_SUFFIX` (text, not styling). It stays local (`.brand-wordmark`
   is already the shared abstraction).
 
 ### Base entries, groups and external links
 
-`baseNav` in `Layout.astro` may name a `group`; `lib/navModel.ts` (`buildNavSections`, tested) builds the sections.
+`baseNav(target)` in `lib/baseNav.ts` (tested) may name a `group`; `lib/navModel.ts` (`buildNavSections`, tested) builds the sections.
 
 - **Section order:** `start` (the Dashboard alone, no heading) → `verwaltung` → extension groups in first-appearance
   order → `system` (Einstellungen, Einrichtung, Module, API-Referenz) last. `start` and `system` are host-owned; an
