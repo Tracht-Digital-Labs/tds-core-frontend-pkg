@@ -96,6 +96,10 @@ Unticking "Alle Rechte freigeben" seeds the list from the full catalog. Quotas n
 
 ## `/firma`: the delegated company-admin surface (`CompanyUsersAdmin.tsx`)
 
+The screen loads the principal, the manageable companies and the open company's users in its `useCompanyUsers`
+hook; the editor is `CompanyMemberForm.tsx`, the list `CompanyMembersTable.tsx`, and the draft, request body,
+offered rights and company pick are pure functions in `lib/companyUsers.ts`.
+
 The nav row ships `hidden` and is revealed for `company-or-platform-admin` **and** at least one membership, so a
 platform admin (no memberships) doesn't see it; by URL they get a company picker from `fetchCompanies()`.
 

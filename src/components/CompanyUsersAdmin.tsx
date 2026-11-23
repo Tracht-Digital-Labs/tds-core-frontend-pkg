@@ -1,16 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  ConfirmDialog,
-  FormAlert,
-  Spinner,
-  toast,
-} from "@tracht-digital-labs/tds-shared/components";
+import { useCallback, useEffect, useState } from "react";
+import { ConfirmDialog, FormAlert, Spinner, toast } from "@tracht-digital-labs/tds-shared/components";
 import { Collapse } from "@tracht-digital-labs/tds-shared/motion/react";
 
 import { fetchMe, membershipIds, type Me } from "../lib/auth";
 import { fetchCompanies, type Company } from "../lib/companies";
 import { getActiveCompany } from "../lib/activeCompany";
-import PermissionMatrix from "./PermissionMatrix";
 import {
   createCompanyUser,
   describeFailure,
@@ -19,8 +13,10 @@ import {
   updateCompanyUser,
   type CompanyMember,
   type CompanyUsersPayload,
-  type Group,
 } from "../lib/companyAdmin";
+import { bodyOf, draftOf, emptyDraft, grantableRights, pickCompany, seatsFull, type Draft } from "../lib/companyUsers";
+import CompanyMemberForm from "./CompanyMemberForm";
+import CompanyMembersTable from "./CompanyMembersTable";
 
 /**
  * A company admin managing their OWN company's users.
@@ -41,163 +37,29 @@ import {
  * names its refusals (`seat_limit`, `permission_not_allowed`, …) so a rejection
  * says which right was the problem instead of "Forbidden".
  */
-
-interface Draft {
-  email: string;
-  name: string;
-  permissions: string[];
-  /** Withheld from this person even where an assigned group grants it. */
-  permissionDenies: string[];
-  groupIds: number[];
-  isCompanyAdmin: boolean;
-  status: "active" | "disabled";
-}
-
-const emptyDraft = (): Draft => ({
-  email: "",
-  name: "",
-  permissions: [],
-  permissionDenies: [],
-  groupIds: [],
-  isCompanyAdmin: false,
-  status: "active",
-});
-
-const draftOf = (member: CompanyMember): Draft => ({
-  email: member.email,
-  name: member.name ?? "",
-  permissions: [...member.permissions],
-  permissionDenies: [...(member.permissionDenies ?? [])],
-  groupIds: [...member.groupIds],
-  isCompanyAdmin: member.isCompanyAdmin,
-  status: member.status,
-});
-
 export default function CompanyUsersAdmin() {
-  const [me, setMe] = useState<Me | null>(null);
-  const [companyId, setCompanyId] = useState<number | null>(null);
-  /** Non-empty only for a platform admin: every company, for the picker. */
-  const [directory, setDirectory] = useState<Company[]>([]);
-  const [payload, setPayload] = useState<CompanyUsersPayload | null>(null);
-  const [error, setError] = useState("");
+  const { me, companyId, directory, payload, error, loading, select, reload } = useCompanyUsers();
   const [notice, setNotice] = useState("");
-  const [loading, setLoading] = useState(true);
-
   const [editingId, setEditingId] = useState<number | "new" | null>(null);
   const [draft, setDraft] = useState<Draft>(emptyDraft());
   const [saving, setSaving] = useState(false);
   const [pendingRemove, setPendingRemove] = useState<CompanyMember | null>(null);
 
-  const load = useCallback(async (id: number) => {
-    const { res, data } = await fetchCompanyUsers(id);
-    if (!data) {
-      setError(await describeFailure(res, "Benutzer konnten nicht geladen werden"));
-      setPayload(null);
-      return;
-    }
-    setPayload(data);
-    setError("");
-  }, []);
-
-  useEffect(() => {
-    void (async () => {
-      const principal = await fetchMe();
-      setMe(principal);
-
-      // A platform admin administers every company — CompanyAdminMiddleware
-      // lets them through this surface regardless of memberships (they have
-      // none) and regardless of whether the company's delegation is switched
-      // on, because that grant limits what a COMPANY may do on its own. So
-      // they get the directory and a picker; everyone else gets the companies
-      // they were made an admin of.
-      if (principal?.isAdmin) {
-        const { companies } = await fetchCompanies();
-        setDirectory(companies);
-        const stored = getActiveCompany();
-        const active =
-          stored !== null && companies.some((c) => c.id === stored)
-            ? stored
-            : (companies[0]?.id ?? null);
-        setCompanyId(active);
-        if (active !== null) await load(active);
-        setLoading(false);
-        return;
-      }
-
-      // Only the companies this person ADMINISTERS are manageable here. A
-      // plain membership would render a screen where every write 403s.
-      const administered = membershipIds(principal, (c) => c.isCompanyAdmin === true);
-
-      // Deliberately NOT `resolveActiveCompany`: that clears the stored pick
-      // when it is not in the list, and the list here is a SUBSET of the
-      // memberships. Someone who is a plain member of A and an admin of B
-      // would lose their panel-wide selection just by opening this page.
-      const stored = getActiveCompany();
-      const active =
-        stored !== null && administered.includes(stored) ? stored : (administered[0] ?? null);
-      setCompanyId(active);
-
-      if (active !== null) await load(active);
-      setLoading(false);
-    })();
-  }, [load]);
-
-  const groupById = useMemo(() => {
-    const map = new Map<number, Group>();
-    for (const group of payload?.groups ?? []) map.set(group.id, group);
-    return map;
-  }, [payload]);
-
-  /**
-   * The rights this admin may hand out. `null` from the server means "no
-   * ceiling" — then everything the assignable groups mention is offered, since
-   * there is no catalog call on this surface.
-   */
-  const grantable = useMemo(() => {
-    if (payload?.allowedPermissions) return payload.allowedPermissions;
-    const fromGroups = new Set<string>();
-    for (const group of payload?.groups ?? []) {
-      for (const key of group.permissions) fromGroups.add(key);
-    }
-    return [...fromGroups].sort();
-  }, [payload]);
-
-  const seatsFull =
-    payload?.seats.remaining !== null && payload?.seats.remaining !== undefined
-      ? payload.seats.remaining <= 0
-      : false;
-
-  function startCreate() {
-    setDraft(emptyDraft());
-    setEditingId("new");
-    setNotice("");
-  }
-
-  function startEdit(member: CompanyMember) {
-    setDraft(draftOf(member));
-    setEditingId(member.id);
+  function startEditing(id: number | "new", next: Draft) {
+    setDraft(next);
+    setEditingId(id);
     setNotice("");
   }
 
   async function save(event: React.FormEvent) {
     event.preventDefault();
-    if (companyId === null) return;
+    if (companyId === null || editingId === null) return;
     setSaving(true);
     try {
-      const body = {
-        email: draft.email.trim(),
-        name: draft.name.trim() || null,
-        permissions: draft.permissions,
-        permissionDenies: draft.permissionDenies,
-        groupIds: draft.groupIds,
-        isCompanyAdmin: draft.isCompanyAdmin,
-        status: draft.status,
-      };
-
       const { res, data } =
         editingId === "new"
-          ? await createCompanyUser(companyId, body)
-          : await updateCompanyUser(companyId, editingId as number, body);
+          ? await createCompanyUser(companyId, bodyOf(draft))
+          : await updateCompanyUser(companyId, editingId, bodyOf(draft));
 
       // Never await a mutation and drop the response.
       if (!data) {
@@ -205,7 +67,7 @@ export default function CompanyUsersAdmin() {
         return;
       }
 
-      const temporary = (data as { temporaryPassword?: string | null }).temporaryPassword;
+      const temporary = "temporaryPassword" in data ? data.temporaryPassword : null;
       if (temporary) {
         // A credential has to be READ and copied, so it stays in the flow — a
         // toast would fade it away with the password still uncopied.
@@ -215,7 +77,7 @@ export default function CompanyUsersAdmin() {
       }
 
       setEditingId(null);
-      await load(companyId);
+      await reload();
     } finally {
       setSaving(false);
     }
@@ -232,7 +94,7 @@ export default function CompanyUsersAdmin() {
     // "Entfernt", not "gelöscht": the account survives, it just no longer
     // belongs to this company.
     toast.success("Benutzer aus der Firma entfernt.");
-    await load(companyId);
+    await reload();
   }
 
   if (loading) {
@@ -268,10 +130,8 @@ export default function CompanyUsersAdmin() {
             className="field-boxed"
             value={companyId}
             onChange={(e) => {
-              const next = Number(e.target.value);
-              setCompanyId(next);
               setEditingId(null);
-              void load(next);
+              void select(Number(e.target.value));
             }}
           >
             {directory.map((company) => (
@@ -289,217 +149,36 @@ export default function CompanyUsersAdmin() {
       )}
 
       {payload && (
-        <div className="tds-card" style={{ padding: "1rem" }}>
-          <div className="tds-row" style={{ justifyContent: "space-between", gap: "1rem" }}>
-            <span className="text-sm">
-              <strong>{payload.seats.used}</strong>
-              {payload.seats.max !== null ? ` von ${payload.seats.max}` : ""} Benutzerplätzen belegt
-              {payload.seats.max === null && " (unbegrenzt)"}
-            </span>
-            <button
-              type="button"
-              className="btn btn-primary"
-              disabled={seatsFull || editingId !== null}
-              onClick={startCreate}
-            >
-              Benutzer hinzufügen
-            </button>
-          </div>
-          {seatsFull && (
-            <p className="text-xs" style={{ color: "var(--color-muted)", marginTop: "0.5rem" }}>
-              Alle Plätze sind belegt. Entfernen Sie einen Benutzer oder fragen Sie nach mehr Plätzen.
-            </p>
-          )}
-        </div>
+        <SeatSummary
+          payload={payload}
+          canAdd={!seatsFull(payload) && editingId === null}
+          onAdd={() => startEditing("new", emptyDraft())}
+        />
       )}
 
       {/* Opens in place; the table below slides down instead of jumping. */}
       <Collapse open={editingId !== null}>
         {editingId !== null && (
-          <form className="tds-card flex flex-col gap-4" style={{ padding: "1.25rem" }} onSubmit={save}>
-            <h2 className="text-sm font-medium">
-              {editingId === "new" ? "Neuer Benutzer" : "Benutzer bearbeiten"}
-            </h2>
-
-            <label className="flex flex-col gap-1">
-              <span className="text-sm font-medium">E-Mail</span>
-              <input
-                className="field-boxed"
-                type="email"
-                required
-                value={draft.email}
-                onChange={(e) => setDraft({ ...draft, email: e.target.value })}
-              />
-              {editingId === "new" && (
-                <span className="text-xs" style={{ color: "var(--color-muted)" }}>
-                  Existiert bereits ein Konto mit dieser Adresse, wird es Ihrer Firma hinzugefügt;
-                  eine Person braucht keine zweite Anmeldung.
-                </span>
-              )}
-            </label>
-
-            <label className="flex flex-col gap-1">
-              <span className="text-sm font-medium">Name</span>
-              <input
-                className="field-boxed"
-                value={draft.name}
-                onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-              />
-            </label>
-
-            {payload && payload.groups.length > 0 && (
-              <fieldset className="flex flex-col gap-2">
-                <legend className="text-sm font-medium">Gruppen</legend>
-                <span className="text-xs" style={{ color: "var(--color-muted)" }}>
-                  Rechte aus einer Gruppe gelten zusätzlich zu den einzeln vergebenen.
-                </span>
-                {payload.groups.map((group) => (
-                  <label key={group.id} className="tds-list__row" style={{ gap: "0.625rem" }}>
-                    <input
-                      type="checkbox"
-                      checked={draft.groupIds.includes(group.id)}
-                      onChange={(e) =>
-                        setDraft({
-                          ...draft,
-                          groupIds: e.target.checked
-                            ? [...draft.groupIds, group.id]
-                            : draft.groupIds.filter((id) => id !== group.id),
-                        })
-                      }
-                    />
-                    <span className="flex flex-col">
-                      <span className="text-sm">{group.name}</span>
-                      {group.description && (
-                        <span className="text-xs" style={{ color: "var(--color-muted)" }}>
-                          {group.description}
-                        </span>
-                      )}
-                    </span>
-                  </label>
-                ))}
-              </fieldset>
-            )}
-
-            <fieldset className="flex flex-col gap-2">
-              <legend className="text-sm font-medium">Rechte</legend>
-              {/* The same control the platform editor uses. A right a group
-                  already grants shows where it comes from and can be withheld
-                  from this one person; anything else is a plain checkbox. */}
-              <PermissionMatrix
-                catalog={grantable.map((id) => ({ id, label: id }))}
-                assignedGroups={(payload?.groups ?? []).filter((g) => draft.groupIds.includes(g.id))}
-                value={draft.permissions}
-                denies={draft.permissionDenies}
-                ceiling={payload?.allowedPermissions ?? null}
-                onChange={(next) =>
-                  setDraft({
-                    ...draft,
-                    permissions: next.permissions,
-                    permissionDenies: next.denies,
-                  })
-                }
-              />
-            </fieldset>
-
-            <label className="tds-list__row" style={{ gap: "0.625rem" }}>
-              <input
-                type="checkbox"
-                checked={draft.isCompanyAdmin}
-                onChange={(e) => setDraft({ ...draft, isCompanyAdmin: e.target.checked })}
-              />
-              <span className="flex flex-col">
-                <span className="text-sm">Firmenadmin</span>
-                <span className="text-xs" style={{ color: "var(--color-muted)" }}>
-                  Darf die Benutzer dieser Firma verwalten, also auch diese Seite hier.
-                </span>
-              </span>
-            </label>
-
-            <label className="flex flex-col gap-1">
-              <span className="text-sm font-medium">Status</span>
-              <select
-                className="field-boxed"
-                value={draft.status}
-                onChange={(e) => setDraft({ ...draft, status: e.target.value as Draft["status"] })}
-              >
-                <option value="active">Aktiv</option>
-                <option value="disabled">Deaktiviert</option>
-              </select>
-            </label>
-
-            <div className="tds-toolbar">
-              <button type="submit" className="btn btn-primary" disabled={saving}>
-                {saving ? <Spinner size="sm" /> : "Speichern"}
-              </button>
-              <button
-                type="button"
-                className="btn btn-ghost"
-                disabled={saving}
-                onClick={() => setEditingId(null)}
-              >
-                Abbrechen
-              </button>
-            </div>
-          </form>
+          <CompanyMemberForm
+            draft={draft}
+            onDraft={setDraft}
+            isNew={editingId === "new"}
+            groups={payload?.groups ?? []}
+            grantable={grantableRights(payload)}
+            ceiling={payload?.allowedPermissions ?? null}
+            saving={saving}
+            onSubmit={save}
+            onCancel={() => setEditingId(null)}
+          />
         )}
       </Collapse>
 
-      <div className="tds-card" style={{ padding: "1.25rem" }}>
-        <table className="tds-table">
-          <caption className="sr-only">Benutzer dieser Firma</caption>
-          <thead>
-            <tr>
-              <th>Benutzer</th>
-              <th>Gruppen</th>
-              <th>Status</th>
-              <th>Aktionen</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(payload?.users ?? []).map((member) => (
-              <tr key={member.id}>
-                <td>
-                  <span className="block text-sm">{member.label}</span>
-                  <span className="block text-xs" style={{ color: "var(--color-muted)" }}>
-                    {member.email}
-                  </span>
-                </td>
-                <td>
-                  {member.isCompanyAdmin && <span className="chip chip--info">Firmenadmin</span>}{" "}
-                  {member.groupIds
-                    .map((id) => groupById.get(id)?.name)
-                    .filter(Boolean)
-                    .join(", ")}
-                </td>
-                <td>
-                  <span
-                    className={`status-pill ${member.status === "active" ? "" : "opacity-70"}`}
-                  >
-                    {member.status === "active" ? "Aktiv" : "Deaktiviert"}
-                  </span>
-                </td>
-                <td>
-                  <div className="tds-row" style={{ gap: "0.375rem" }}>
-                    <button type="button" className="btn btn-ghost" onClick={() => startEdit(member)}>
-                      Bearbeiten
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-ghost"
-                      onClick={() => setPendingRemove(member)}
-                    >
-                      Entfernen
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {(payload?.users.length ?? 0) === 0 && (
-          <p className="tds-empty">Noch keine weiteren Benutzer in dieser Firma.</p>
-        )}
-      </div>
+      <CompanyMembersTable
+        users={payload?.users ?? []}
+        groups={payload?.groups ?? []}
+        onEdit={(member) => startEditing(member.id, draftOf(member))}
+        onRemove={setPendingRemove}
+      />
 
       <ConfirmDialog
         open={pendingRemove !== null}
@@ -511,4 +190,95 @@ export default function CompanyUsersAdmin() {
       />
     </div>
   );
+}
+
+/** Seats in use against the cap, and the add button. */
+function SeatSummary({ payload, canAdd, onAdd }: { payload: CompanyUsersPayload; canAdd: boolean; onAdd: () => void }) {
+  const { used, max } = payload.seats;
+  return (
+    <div className="tds-card" style={{ padding: "1rem" }}>
+      <div className="tds-row" style={{ justifyContent: "space-between", gap: "1rem" }}>
+        <span className="text-sm">
+          <strong>{used}</strong>
+          {max !== null ? ` von ${max}` : ""} Benutzerplätzen belegt
+          {max === null && " (unbegrenzt)"}
+        </span>
+        <button type="button" className="btn btn-primary" disabled={!canAdd} onClick={onAdd}>
+          Benutzer hinzufügen
+        </button>
+      </div>
+      {seatsFull(payload) && (
+        <p className="text-xs" style={{ color: "var(--color-muted)", marginTop: "0.5rem" }}>
+          Alle Plätze sind belegt. Entfernen Sie einen Benutzer oder fragen Sie nach mehr Plätzen.
+        </p>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Who is asking, which companies they may manage here, and the open
+ * company's users.
+ *
+ * A platform admin administers every company — CompanyAdminMiddleware lets
+ * them through this surface regardless of memberships (they have none) and
+ * regardless of whether the company's delegation is switched on, because that
+ * grant limits what a COMPANY may do on its own. So they get the directory and
+ * a picker. Everyone else gets only the companies they ADMINISTER: a plain
+ * membership would render a screen where every write 403s.
+ */
+function useCompanyUsers() {
+  const [me, setMe] = useState<Me | null>(null);
+  const [companyId, setCompanyId] = useState<number | null>(null);
+  /** Non-empty only for a platform admin: every company, for the picker. */
+  const [directory, setDirectory] = useState<Company[]>([]);
+  const [payload, setPayload] = useState<CompanyUsersPayload | null>(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async (id: number) => {
+    const { res, data } = await fetchCompanyUsers(id);
+    if (!data) {
+      setError(await describeFailure(res, "Benutzer konnten nicht geladen werden"));
+      setPayload(null);
+      return;
+    }
+    setPayload(data);
+    setError("");
+  }, []);
+
+  useEffect(() => {
+    void (async () => {
+      const principal = await fetchMe();
+      setMe(principal);
+
+      let ids: number[];
+      if (principal?.isAdmin) {
+        const { companies } = await fetchCompanies();
+        setDirectory(companies);
+        ids = companies.map((c) => c.id);
+      } else {
+        ids = membershipIds(principal, (c) => c.isCompanyAdmin === true);
+      }
+
+      const active = pickCompany(getActiveCompany(), ids);
+      setCompanyId(active);
+      if (active !== null) await load(active);
+      setLoading(false);
+    })();
+  }, [load]);
+
+  const select = useCallback(
+    (id: number) => {
+      setCompanyId(id);
+      return load(id);
+    },
+    [load],
+  );
+
+  const reload = useCallback(async () => {
+    if (companyId !== null) await load(companyId);
+  }, [companyId, load]);
+
+  return { me, companyId, directory, payload, error, loading, select, reload };
 }
