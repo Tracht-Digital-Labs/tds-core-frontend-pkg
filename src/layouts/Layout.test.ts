@@ -39,13 +39,26 @@ const require_ = createRequire(import.meta.url);
 const sharedStyle = (subpath: string) =>
   require_.resolve(`@tracht-digital-labs/tds-shared/styles/${subpath}`);
 
+/**
+ * A tds-shared stylesheet as the product build sees it. Since the stylesheet
+ * split, `base.css` is a list of `@import "./base/<part>.css"`; this inlines
+ * those partials the way `@tailwindcss/postcss` does. An unsplit file has no
+ * such imports and comes back unchanged.
+ */
+const readSharedStyle = (subpath: string) => {
+  const file = sharedStyle(subpath);
+  return readFileSync(file, "utf8").replace(/^@import "(\.\/[\w-]+\/[\w-]+\.css)";\r?$/gm, (_, partial: string) =>
+    readFileSync(join(dirname(file), partial), "utf8"),
+  );
+};
+
 const layout = readFileSync(join(__dirname, "Layout.astro"), "utf8");
 const component = (name: string) => readFileSync(join(__dirname, "..", "components", name), "utf8");
 const gate = component("AuthGate.astro");
 /** The layout and the chrome it renders, for rules about the whole shell. */
 const shell = [layout, ...["MobileTopBar.astro", "SidebarRail.astro", "NavDrawer.astro"].map(component)].join("\n");
-const baseCss = readFileSync(sharedStyle("base.css"), "utf8");
-const panelCss = readFileSync(sharedStyle("surfaces/panel.css"), "utf8");
+const baseCss = readSharedStyle("base.css");
+const panelCss = readSharedStyle("surfaces/panel.css");
 
 /** Strip comments so prose in a docblock never counts as a declaration. */
 const stripComments = (css: string) => css.replace(/\/\*[\s\S]*?\*\//g, "");
