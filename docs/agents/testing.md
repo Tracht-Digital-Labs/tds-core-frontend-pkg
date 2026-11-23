@@ -22,6 +22,7 @@ type-check and `lint:primitives`; the products' release workflows don't, so this
 | `notificationFeed.test.ts` | Restraint: hidden tabs don't poll, 401/403 stops, transport failures aren't toasted, the cursor advances |
 | `dashboardLayout.test.ts` | Progressive enhancement (no layout / API error / unreachable → authored order); all four save branches via `tds:toast` |
 | `UsersAdmin.flows.test.tsx` | Every user-management action against a scripted auth API: payload, refusal messages per status, in-flow temporary passwords, membership/group/company-admin rules, one policy request per company. Mutation check: 23 breakages, 22 caught (jsdom trims e-mail inputs itself) |
+| `ProfileSettings.test.tsx` | Every account-screen action against scripted auth and preferences APIs; unsaved name and fresh picture survive a tab change; the theme writes no preferences request; sessions reload per visit. Mutation check: 16 breakages, 16 caught |
 | `ModulesAdmin.test.tsx` | One read-only request; no update or deploy control |
 | `panelHues.test.ts` | One distinct hue per group; the mapping |
 | `moduleInventory`, `activeCompany` / `actAsHeaders` tests | Inventory degradation; auth prefix excluded first |
