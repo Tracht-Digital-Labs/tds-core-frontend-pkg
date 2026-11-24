@@ -1,0 +1,36 @@
+---
+/**
+ * The mobile drawer (below `lg`). `.nav-drawer-panel` shares the rail's navy
+ * surface and token remap, so the slide-in reads identically to the desktop
+ * rail. Opened and closed by lib/navDrawer.ts.
+ */
+import BrandWordmark from "./BrandWordmark.astro";
+import NavList from "./NavList.astro";
+import type { NavSection } from "../lib/navModel";
+
+interface Props {
+  navSections: NavSection[];
+}
+
+const { navSections } = Astro.props;
+---
+
+<div class="nav-drawer lg:hidden" id="nav-drawer" data-open="false">
+  <div class="nav-drawer-backdrop" data-nav-drawer-close></div>
+  <div class="nav-drawer-panel">
+    <div class="px-4 py-4 flex items-center gap-2">
+      <BrandWordmark />
+      <button
+        type="button"
+        class="btn btn-ghost ml-auto"
+        data-nav-drawer-close
+        aria-label="Navigation schließen"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+    <NavList sections={navSections} />
+  </div>
+</div>

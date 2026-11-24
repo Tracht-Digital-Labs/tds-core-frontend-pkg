@@ -7,7 +7,7 @@ The gate, `redirectToLogin` and `logout` bounce to `LOGIN_URL` (`PUBLIC_LOGIN_UR
 `https://auth.tracht-digital.de`) with an **absolute** `?next=`. The session cookie is `Domain=.tracht-digital.de`,
 so a login there is valid here immediately.
 
-## The pre-paint gate (`Layout.astro`)
+## The pre-paint gate (`components/AuthGate.astro`)
 
 - **Probe `/me` when there is no local hint, and seed it on success.** A missing hint after arriving from the login
   site is normal (localStorage is per origin); redirecting on it would loop against the login.
@@ -18,7 +18,7 @@ so a login there is valid here immediately.
   (`<script is:inline set:html={themeBootstrapScript} />`). It must stay `is:inline` and **before** the gate,
   whose spinner paints in theme colours. Never wrap it in a template body.
 - The gate spinner is a deliberate copy of `.tds-spinner--lg.tds-spinner--primary` (it paints before CSS loads);
-  geometry, timing and hex fallbacks are marked KEEP-IN-SYNC in `Layout.astro`. The gate backdrop paints
+  geometry, timing and hex fallbacks are marked KEEP-IN-SYNC in `AuthGate.astro`. The gate backdrop paints
   **`--tds-panel-canvas`**, not `--color-paper`. `src/layouts/Layout.test.ts` checks the hex fallbacks against the
   installed tds-shared canvas formula (tolerance 3 per channel).
 - `target.test.ts` pins different `HINT_PREFIX` values per product (a shared prefix would let a stale admin hint

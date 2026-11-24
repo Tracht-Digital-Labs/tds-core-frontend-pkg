@@ -12,7 +12,7 @@
  * Active state and the section hue arrive pre-resolved (`item.active`,
  * `section.hue`) rather than as callbacks, so this component stays pure
  * presentation and the rules live in exactly one place each — path
- * normalisation in Layout.astro's `isActive`, colour in lib/panelHues.ts.
+ * normalisation in lib/navModel.ts's `isActivePath`, colour in lib/panelHues.ts.
  */
 import Icon from "./Icon.astro";
 import { REVEAL_CACHE_KEY } from "../lib/revealNav";

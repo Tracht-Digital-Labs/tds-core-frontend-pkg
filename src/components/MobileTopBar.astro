@@ -1,0 +1,50 @@
+---
+/**
+ * The top bar below `lg`: drawer trigger, wordmark, the page's name, search,
+ * theme and the profile menu. Below `lg` the rail is gone, and with it the
+ * only "you are here", so the bar names the page.
+ */
+import { ThemeToggle } from "@tracht-digital-labs/tds-shared/components";
+import BrandWordmark from "./BrandWordmark.astro";
+import Icon from "./Icon.astro";
+import UserMenu from "./UserMenu.tsx";
+
+interface Props {
+  pageLabel: string;
+}
+
+const { pageLabel } = Astro.props;
+---
+
+<header
+  class="lg:hidden sticky top-0 z-40 flex items-center gap-3 px-4 py-3 border-b border-[color:var(--color-line)] bg-[color:var(--color-paper)]"
+>
+  <button
+    type="button"
+    id="nav-drawer-open"
+    class="btn btn-ghost"
+    aria-controls="nav-drawer"
+    aria-expanded="false"
+    aria-label="Navigation öffnen"
+  >
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+      <path d="M3 6h18M3 12h18M3 18h18" stroke-linecap="round" />
+    </svg>
+  </button>
+  <span class="mobile-brand"><BrandWordmark /></span>
+  <span class="mobile-page-title" aria-hidden="true">{pageLabel}</span>
+  <span class="ml-auto flex items-center gap-1">
+    <button
+      type="button"
+      class="btn btn-ghost px-2"
+      data-quick-nav-open
+      aria-haspopup="dialog"
+      aria-expanded="false"
+      aria-label="Suchen (Strg+K)"
+    >
+      <Icon name="search" />
+    </button>
+    <ThemeToggle client:idle />
+    <UserMenu client:idle compact />
+  </span>
+</header>

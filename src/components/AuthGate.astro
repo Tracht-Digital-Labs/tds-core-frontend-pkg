@@ -1,0 +1,130 @@
+---
+/**
+ * The pre-paint auth gate: hides the page until the session is confirmed, and
+ * bounces to the central login when it is not. Rendered in `<head>` by
+ * Layout.astro for every page except `bare` ones. See docs/agents/auth-session.md.
+ *
+ * The style MUST stay an inline style element: it paints before the CSS bundle
+ * loads, which is the entire point — so it cannot use the shared .tds-spinner
+ * class and the token fallbacks have to be literal hexes.
+ *
+ * KEEP IN SYNC with base.css: the geometry and timing are deliberately
+ * identical to .tds-spinner--lg.tds-spinner--primary (2.25rem, 3px, 20% ring,
+ * cubic-bezier(.5,.15,.5,.85), 0.7s); only the keyframe name differs, to avoid
+ * colliding with tds-spin. The hex fallbacks mirror --color-primary (#050f68)
+ * and the panel CANVAS, not --color-paper: the page sits on
+ * --tds-panel-canvas, so painting the gate in plain paper would step to a
+ * different colour the moment the bundle lands. Preferring the token and
+ * falling back to its computed literal keeps the reveal seamless.
+ *
+ * The canvas literals (light #f1efec, dark #0f1223) follow the tds-shared
+ * 0.23.0 formula: a 3% accent tint over a 40% sand / 60% paper blend. The admin
+ * and customer targets differ by ~1–2%, which is not worth a second literal
+ * for the few ms before CSS loads. Layout.test.ts recomputes the canvas from
+ * the installed tds-shared and fails when these drift.
+ *
+ * The style carries its OWN reduced-motion query. It cannot rely on the global
+ * clamp in base.css: during the exact window it is on screen that clamp does
+ * not exist yet.
+ */
+import { HINT_PREFIX, LOGIN_URL } from "../config/target";
+
+const authApiUrl =
+  (import.meta.env.PUBLIC_AUTH_API_URL as string | undefined) ??
+  "https://api.tracht-digital.de/auth";
+const hintKey = `${HINT_PREFIX}_authed`;
+const expKey = `${HINT_PREFIX}_authed_exp`;
+const confirmedKey = `${HINT_PREFIX}_confirmed`;
+---
+
+<style is:inline>
+  html.auth-checking body { visibility: hidden; }
+  html.auth-checking::before {
+    content: ""; position: fixed; inset: 0; z-index: 2147483646;
+    background: var(--tds-panel-canvas, #f1efec);
+  }
+  html[data-theme="dark"].auth-checking::before { background: var(--tds-panel-canvas, #0f1223); }
+  html.auth-checking::after {
+    content: ""; position: fixed; inset: 0; margin: auto; z-index: 2147483647;
+    width: 2.25rem; height: 2.25rem; border-radius: 9999px;
+    border: 3px solid color-mix(in srgb, var(--color-primary, #050f68) 20%, transparent);
+    border-top-color: var(--color-primary, #050f68);
+    animation: tds-auth-spin 0.7s cubic-bezier(0.5, 0.15, 0.5, 0.85) infinite;
+  }
+  @keyframes tds-auth-spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) {
+    html.auth-checking::after {
+      animation: none;
+      border-color: color-mix(in srgb, var(--color-primary, #050f68) 35%, transparent);
+    }
+  }
+</style>
+
+<script is:inline define:vars={{ authApiUrl, loginUrl: LOGIN_URL, hintKey, expKey, confirmedKey }}>
+  (function () {
+    function redirect() {
+      // Bounce to the central login (auth.tracht-digital.de) with an
+      // ABSOLUTE return URL — it validates ?next= against an allow-list
+      // and sends the user back here after login.
+      var next = encodeURIComponent(location.href);
+      location.replace(loginUrl + "?next=" + next);
+    }
+    function clear() {
+      try {
+        localStorage.removeItem(hintKey);
+        localStorage.removeItem(expKey);
+        localStorage.removeItem(confirmedKey);
+      } catch (e) {}
+    }
+    var hint, exp, okUntil;
+    try {
+      hint = localStorage.getItem(hintKey);
+      exp = localStorage.getItem(expKey);
+      okUntil = localStorage.getItem(confirmedKey);
+    } catch (e) { hint = null; }
+
+    // A hint with a known-past expiry means the local session lapsed —
+    // drop it and fall through to a fresh /me probe (the shared SSO
+    // cookie may still be valid from another panel).
+    if (hint) {
+      var expMs = exp ? Number(exp) : NaN;
+      if (Number.isFinite(expMs) && expMs <= Date.now()) { clear(); hint = null; }
+    }
+
+    // Fresh confirmation → paint immediately (only trusted with a hint).
+    if (hint) {
+      var okMs = okUntil ? Number(okUntil) : NaN;
+      if (Number.isFinite(okMs) && okMs > Date.now()) return;
+    }
+
+    // Otherwise confirm against /me before revealing. This also covers
+    // arriving fresh from the central login: the SSO cookie is set but
+    // there is no local hint yet (localStorage is per-origin — the login
+    // site cannot write this panel's). On success we SEED the hint here,
+    // so we must NOT redirect on a missing hint (that would loop against
+    // the login site, which sees a valid cookie and bounces straight
+    // back). Only a 401 from /me is a real logout.
+    document.documentElement.classList.add("auth-checking");
+    function reveal() {
+      try {
+        localStorage.setItem(hintKey, "1");
+        localStorage.setItem(confirmedKey, String(Date.now() + 60000));
+      } catch (e) {}
+      document.documentElement.classList.remove("auth-checking");
+    }
+    fetch(authApiUrl + "/me", { credentials: "include" }).then(function (res) {
+      if (res.ok) { reveal(); return; }
+      // Not logged in *yet*. A device with "angemeldet bleiben" holds a
+      // 30-day cookie that can mint a fresh session — the session JWT
+      // itself is deliberately short-lived, so without this exchange the
+      // remembered login would still bounce to the login page every hour.
+      return fetch(authApiUrl + "/refresh", { method: "POST", credentials: "include" })
+        .then(function (r) {
+          if (!r.ok) { clear(); redirect(); return; }
+          reveal();
+        });
+    }).catch(function () {
+      document.documentElement.classList.remove("auth-checking");
+    });
+  })();
+</script>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FormAlert, Spinner, toast } from "@tracht-digital-labs/tds-shared/components";
+import { describeFailure, FormAlert, Spinner, toast } from "@tracht-digital-labs/tds-shared/components";
 import { copyText } from "@tracht-digital-labs/tds-shared/clipboard";
 import { API_BASE, frontendFetch } from "../lib/auth";
 
@@ -56,17 +56,13 @@ export default function StripeSettings() {
     try {
       const res = await frontendFetch(STATUS);
       if (!res.ok) {
-        setError(
-          res.status === 401 || res.status === 403
-            ? "Nur für Administratoren."
-            : `Stripe-Status konnte nicht geladen werden (HTTP ${res.status}).`,
-        );
+        setError(describeFailure(res, "Stripe-Status konnte nicht geladen werden", { adminOnly: true }));
         return;
       }
       setStatus((await res.json()) as StripeStatus);
       setError(null);
     } catch {
-      setError("Stripe-Status konnte nicht geladen werden, die API ist nicht erreichbar.");
+      setError(describeFailure(null, "Stripe-Status konnte nicht geladen werden"));
     } finally {
       setLoaded(true);
     }
@@ -97,7 +93,7 @@ export default function StripeSettings() {
         toast.danger(data?.error ?? `Speichern fehlgeschlagen (HTTP ${res.status}).`);
       }
     } catch {
-      toast.danger("Speichern fehlgeschlagen, die API ist nicht erreichbar.");
+      toast.danger(describeFailure(null, "Speichern fehlgeschlagen"));
     } finally {
       setBusy(false);
     }
@@ -117,7 +113,7 @@ export default function StripeSettings() {
         );
       }
     } catch {
-      setTestError("Test fehlgeschlagen, die API ist nicht erreichbar.");
+      setTestError(describeFailure(null, "Test fehlgeschlagen"));
     } finally {
       setTesting(false);
     }

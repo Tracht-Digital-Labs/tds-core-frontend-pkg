@@ -18,24 +18,21 @@ import { errorBounceScript, offscreenAnimationScript, themeBootstrapScript } fro
 // Client-side navigation. See the CLIENT-SIDE NAVIGATION note further down for
 // the four things it changes about how this shell has to be written.
 import { ClientRouter } from "astro:transitions";
-import BrandWordmark from "../components/BrandWordmark.astro";
 import Icon from "../components/Icon.astro";
 import UserMenu from "../components/UserMenu.tsx";
 import SetupBanner from "../components/SetupBanner.tsx";
-import NavList from "../components/NavList.astro";
+import MobileTopBar from "../components/MobileTopBar.astro";
+import NavDrawer from "../components/NavDrawer.astro";
+import SidebarRail from "../components/SidebarRail.astro";
 import QuickNav from "../components/QuickNav.tsx";
-import { activeLabel, buildNavSections, type NavInput } from "../lib/navModel";
+import AuthGate from "../components/AuthGate.astro";
+import { baseNav } from "../lib/baseNav";
+import { activeLabel, buildNavSections } from "../lib/navModel";
 import { quickEntries } from "../lib/quickNav";
 import { settingsSections } from "../lib/settingsSections";
 import { registry } from "virtual:frontend-registry";
-// BRAND_SUFFIX is deliberately NOT imported here — it is consumed only by
-// <BrandWordmark />, which keeps the shell's single per-target value in one place.
-import { HINT_PREFIX, LOGIN_URL, FRONTEND_TARGET } from "../config/target";
+import { FRONTEND_TARGET } from "../config/target";
 import { API_BASE } from "../lib/auth";
-
-const hintKey = `${HINT_PREFIX}_authed`;
-const expKey = `${HINT_PREFIX}_authed_exp`;
-const confirmedKey = `${HINT_PREFIX}_confirmed`;
 
 interface Props {
   title: string;
@@ -52,123 +49,15 @@ const {
   bare = false,
 } = Astro.props;
 
-const authApiUrl =
-  (import.meta.env.PUBLIC_AUTH_API_URL as string | undefined) ??
-  "https://api.tracht-digital.de/auth";
-
-// Base-service nav, declared as data so the desktop rail and the mobile drawer
-// render from ONE source instead of two hand-kept copies. The `icon` keys are
-// resolved by components/Icon.astro; `order` keeps these ahead of any
-// extension that targets this same group. Sections and their order are
-// lib/navModel.ts's: the Dashboard stands alone at the top, configuration
-// (`group: "system"`) closes the rail.
-const baseNav: NavInput[] = [
-  { href: "/", label: "Dashboard", id: undefined, icon: "layout-dashboard", order: 0, group: "start" },
-  // Platform-admin only, and revealed the same way `/firma` is. It used to hang
-  // in the nav of BOTH products unconditionally, so every portal user was
-  // invited to a screen whose very first call answers 403.
-  { href: "/users", label: "Benutzer", id: "users", icon: "users", order: 1, revealFor: "platform-admin" },
-  // The company admin's own user management. Rendered hidden and revealed by
-  // the shell script once /me confirms the role — the nav is built at BUILD
-  // time and cannot know it. In BOTH products: a company admin signs in to the
-  // portal, and the Firmen extension is admin-product only.
-  //
-  // The condition also requires a MEMBERSHIP (see revealNav): someone in no
-  // company has no "meine Firma", so the row stays hidden for them — platform
-  // admins included, who manage companies from the Firmen directory instead.
-  {
-    href: "/firma",
-    label: "Meine Firma",
-    id: "firma",
-    icon: "building",
-    order: 2,
-    revealFor: "company-or-platform-admin",
-  },
-  // One route, two wikis (see pages/wiki.astro): the admin build gets the API
-  // reference, the portal gets FAQs and handbooks. The label and icon follow the
-  // content, because "Wiki" told a customer nothing about what is behind it.
-  // The API reference is platform documentation and closes the System group;
-  // the portal's help is customer content and stays with the account rows.
-  {
-    href: "/wiki",
-    label: FRONTEND_TARGET === "admin" ? "API-Referenz" : "Hilfe",
-    id: "wiki",
-    icon: FRONTEND_TARGET === "admin" ? "book-open" : "life-buoy",
-    order: FRONTEND_TARGET === "admin" ? 6 : 3,
-    group: FRONTEND_TARGET === "admin" ? "system" : undefined,
-  },
-  // Platform-admin only: every section on that page configures the platform
-  // (SMTP, Stripe, CORS and each extension's /admin/settings/*). In the portal
-  // it used to open onto sections that all answered 403.
-  {
-    href: "/einstellungen",
-    label: "Einstellungen",
-    id: "einstellungen",
-    icon: "settings",
-    order: 4,
-    group: "system",
-    revealFor: "platform-admin",
-  },
-];
-
-// The setup wizard sits next to the settings it links into. Admin product only:
-// every item names a platform credential, and the portal has nothing to set up.
-if (FRONTEND_TARGET === "admin") {
-  baseNav.push({
-    href: "/einrichtung",
-    label: "Einrichtung",
-    id: "einrichtung",
-    icon: "list-checks",
-    order: 4.5,
-    group: "system",
-    revealFor: "platform-admin",
-  });
-}
-
-// Module lists the code composed into this build and the locally installed API
-// packages. It is read-only: releases and deploys stay in the repositories.
-// Admin-product only: the route is injected into both targets (one route list),
-// and the API gates `/admin/modules` on `isAdmin` regardless of who finds it.
-if (FRONTEND_TARGET === "admin") {
-  baseNav.push({ href: "/module", label: "Module", id: "module", icon: "package", order: 5, group: "system" });
-
-  // The PUBLIC tools site. It joins the `tools` group so it sits beside the
-  // tools extension's own "Tools" entry (`/tools-verwaltung`, the catalog
-  // editor) — the label says "Website" precisely because those two are one
-  // click apart and easy to confuse.
-  //
-  // Opens in a NEW TAB, unlike the same-tab cross-property links on the public
-  // sites: someone in the panel is mid-task, and replacing their working
-  // context with a public catalog loses their place.
-  baseNav.push({
-    href: "https://tools.tracht-digital.de",
-    label: "Tools-Website",
-    id: "tools-site",
-    icon: "external-link",
-    group: "tools",
-    order: 90,
-    external: true,
-  });
-}
-
 /**
  * SHELL ANATOMY — documented here rather than inline; see the gotcha below.
  *
- *   header.lg:hidden      mobile top bar (below lg): wordmark, ThemeToggle and
- *                         the drawer trigger. Before this, below `lg` the panel
- *                         simply stacked a full-width nav block above the
- *                         content, with no drawer at all.
- *   aside.portal-sidebar  desktop rail (lg and up). `.portal-sidebar` is the
- *                         fixed deep-navy panel from tds-shared's app.css: it
- *                         re-maps --color-ink/-muted/-line/-soft/-card and
- *                         --nav-hue *within* the panel, so every child reads
- *                         light automatically in BOTH themes. The class sat
- *                         unused for a long time and this shell rendered a
- *                         plain paper-coloured column instead — which is why the
- *                         panel looked nothing like the customer portal.
- *   div.nav-drawer        mobile drawer (below lg). `.nav-drawer-panel` shares
- *                         the exact same navy surface + token remap, so the
- *                         slide-in reads identically to the desktop rail.
+ *   <AuthGate />          the pre-paint session gate in <head>; not on `bare` pages.
+ *   <MobileTopBar />      below lg: drawer trigger, wordmark, page name, search,
+ *                         theme and profile menu.
+ *   <SidebarRail />       lg and up: the deep-navy rail with the collapse toggle.
+ *   <NavDrawer />         below lg: the slide-in with the rail's surface.
+ *   header.panel-topbar   lg and up: search, theme and profile menu.
  *   main#main             the page slot.
  *
  * The rail and the drawer both render `<NavList sections={navSections} />` and
@@ -213,7 +102,7 @@ if (FRONTEND_TARGET === "admin") {
 // One resolved nav model (lib/navModel.ts), rendered by <NavList> in both the
 // rail and the drawer, and flattened for the quick search. Active state and
 // the section hue are resolved there, so NavList stays presentation only.
-const navSections = buildNavSections(baseNav, registry.nav, Astro.url.pathname);
+const navSections = buildNavSections(baseNav(FRONTEND_TARGET), registry.nav, Astro.url.pathname);
 const quickNav = quickEntries(navSections, settingsSections(registry.settings));
 // The mobile header names the page: below `lg` the rail is gone, and with it
 // the only "you are here". The nav row's label is the short name; the title
@@ -293,134 +182,7 @@ const mainTransition = { forwards: pageSwap, backwards: pageSwap };
         product astro.configs free of anything but their extension set. */}
     <ClientRouter />
 
-    {
-      !bare && (
-        <>
-          {/* Pre-paint gate. This MUST stay an inline style element: it paints
-              before the CSS bundle loads, which is the entire point — so it
-              cannot use the shared .tds-spinner class and the token fallbacks
-              have to be literal hexes.
-              NB keep angle brackets OUT of Astro expression comments: the
-              template tokenizer reads one as a tag and the build dies with
-              "Expected )".
-              KEEP IN SYNC with base.css: the geometry and timing below are
-              deliberately identical to .tds-spinner--lg.tds-spinner--primary
-              (2.25rem, 3px, 20% ring, cubic-bezier(.5,.15,.5,.85), 0.7s); only
-              the keyframe name differs, to avoid colliding with tds-spin. The
-              hex fallbacks mirror --color-primary (#050f68) and the panel
-              CANVAS, not --color-paper: since 0.15.0 the page sits on
-              --tds-panel-canvas, so painting the gate in plain paper would
-              step to a different colour the moment the bundle lands.
-              Preferring the token and falling back to its computed literal
-              keeps the reveal seamless.
-
-              THE LITERALS ARE RE-COMPUTED FOR tds-shared 0.23.0, where the
-              canvas became a 3% accent tint over a 40% sand / 60% paper
-              blend rather than 4% over bare paper ("Digitale Maßarbeit" —
-              at 4% over paper the accent's blue pulled the canvas cool).
-              Light #f1efec, dark #0f1223; the admin and customer targets
-              differ by ~1–2%, which is not worth a second literal for the
-              few ms before CSS loads. If the canvas formula changes in
-              tds-shared, recompute these — a stale literal here is a visible
-              colour step at reveal and nothing tests it.
-              This block also carries its OWN reduced-motion query. It cannot
-              rely on base.css's global clamp: the whole point of this style
-              is that it paints BEFORE the CSS bundle loads, so during the
-              exact window it is on screen the clamp does not exist yet. */}
-          <style is:inline>
-            html.auth-checking body { visibility: hidden; }
-            html.auth-checking::before {
-              content: ""; position: fixed; inset: 0; z-index: 2147483646;
-              background: var(--tds-panel-canvas, #f1efec);
-            }
-            html[data-theme="dark"].auth-checking::before { background: var(--tds-panel-canvas, #0f1223); }
-            html.auth-checking::after {
-              content: ""; position: fixed; inset: 0; margin: auto; z-index: 2147483647;
-              width: 2.25rem; height: 2.25rem; border-radius: 9999px;
-              border: 3px solid color-mix(in srgb, var(--color-primary, #050f68) 20%, transparent);
-              border-top-color: var(--color-primary, #050f68);
-              animation: tds-auth-spin 0.7s cubic-bezier(0.5, 0.15, 0.5, 0.85) infinite;
-            }
-            @keyframes tds-auth-spin { to { transform: rotate(360deg); } }
-            @media (prefers-reduced-motion: reduce) {
-              html.auth-checking::after {
-                animation: none;
-                border-color: color-mix(in srgb, var(--color-primary, #050f68) 35%, transparent);
-              }
-            }
-          </style>
-
-          <script is:inline define:vars={{ authApiUrl, loginUrl: LOGIN_URL, hintKey, expKey, confirmedKey }}>
-            (function () {
-              function redirect() {
-                // Bounce to the central login (auth.tracht-digital.de) with an
-                // ABSOLUTE return URL — it validates ?next= against an allow-list
-                // and sends the user back here after login.
-                var next = encodeURIComponent(location.href);
-                location.replace(loginUrl + "?next=" + next);
-              }
-              function clear() {
-                try {
-                  localStorage.removeItem(hintKey);
-                  localStorage.removeItem(expKey);
-                  localStorage.removeItem(confirmedKey);
-                } catch (e) {}
-              }
-              var hint, exp, okUntil;
-              try {
-                hint = localStorage.getItem(hintKey);
-                exp = localStorage.getItem(expKey);
-                okUntil = localStorage.getItem(confirmedKey);
-              } catch (e) { hint = null; }
-
-              // A hint with a known-past expiry means the local session lapsed —
-              // drop it and fall through to a fresh /me probe (the shared SSO
-              // cookie may still be valid from another panel).
-              if (hint) {
-                var expMs = exp ? Number(exp) : NaN;
-                if (Number.isFinite(expMs) && expMs <= Date.now()) { clear(); hint = null; }
-              }
-
-              // Fresh confirmation → paint immediately (only trusted with a hint).
-              if (hint) {
-                var okMs = okUntil ? Number(okUntil) : NaN;
-                if (Number.isFinite(okMs) && okMs > Date.now()) return;
-              }
-
-              // Otherwise confirm against /me before revealing. This also covers
-              // arriving fresh from the central login: the SSO cookie is set but
-              // there is no local hint yet (localStorage is per-origin — the login
-              // site cannot write this panel's). On success we SEED the hint here,
-              // so we must NOT redirect on a missing hint (that would loop against
-              // the login site, which sees a valid cookie and bounces straight
-              // back). Only a 401 from /me is a real logout.
-              document.documentElement.classList.add("auth-checking");
-              function reveal() {
-                try {
-                  localStorage.setItem(hintKey, "1");
-                  localStorage.setItem(confirmedKey, String(Date.now() + 60000));
-                } catch (e) {}
-                document.documentElement.classList.remove("auth-checking");
-              }
-              fetch(authApiUrl + "/me", { credentials: "include" }).then(function (res) {
-                if (res.ok) { reveal(); return; }
-                // Not logged in *yet*. A device with "angemeldet bleiben" holds a
-                // 30-day cookie that can mint a fresh session — the session JWT
-                // itself is deliberately short-lived, so without this exchange the
-                // remembered login would still bounce to the login page every hour.
-                return fetch(authApiUrl + "/refresh", { method: "POST", credentials: "include" })
-                  .then(function (r) {
-                    if (!r.ok) { clear(); redirect(); return; }
-                    reveal();
-                  });
-              }).catch(function () {
-                document.documentElement.classList.remove("auth-checking");
-              });
-            })();
-          </script>
-        </>
-      )
-    }
+    {!bare && <AuthGate />}
   </head>
   <body>
     {
@@ -428,86 +190,9 @@ const mainTransition = { forwards: pageSwap, backwards: pageSwap };
         <slot />
       ) : (
         <div class="flex flex-col lg:flex-row min-h-dvh">
-          <header
-            class="lg:hidden sticky top-0 z-40 flex items-center gap-3 px-4 py-3 border-b border-[color:var(--color-line)] bg-[color:var(--color-paper)]"
-          >
-            <button
-              type="button"
-              id="nav-drawer-open"
-              class="btn btn-ghost"
-              aria-controls="nav-drawer"
-              aria-expanded="false"
-              aria-label="Navigation öffnen"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-                <path d="M3 6h18M3 12h18M3 18h18" stroke-linecap="round" />
-              </svg>
-            </button>
-            <span class="mobile-brand"><BrandWordmark /></span>
-            <span class="mobile-page-title" aria-hidden="true">{pageLabel}</span>
-            <span class="ml-auto flex items-center gap-1">
-              <button
-                type="button"
-                class="btn btn-ghost px-2"
-                data-quick-nav-open
-                aria-haspopup="dialog"
-                aria-expanded="false"
-                aria-label="Suchen (Strg+K)"
-              >
-                <Icon name="search" />
-              </button>
-              <ThemeToggle client:idle />
-              <UserMenu client:idle compact />
-            </span>
-          </header>
-          <aside class="portal-sidebar hidden lg:flex lg:flex-col w-60 shrink-0 border-r">
-            <div class="sidebar-head px-4 py-4 flex items-center gap-2">
-              <span class="sidebar-hide-collapsed"><BrandWordmark /></span>
-              <button
-                type="button"
-                class="btn btn-ghost ml-auto px-2"
-                data-sidebar-toggle
-                aria-controls="panel-nav"
-                aria-expanded="true"
-                aria-label="Navigation einklappen"
-              >
-                <span data-expanded-icon><Icon name="chevrons-left" /></span>
-                <span data-collapsed-icon hidden><Icon name="chevrons-right" /></span>
-              </button>
-            </div>
-            <div id="panel-nav" class="flex-1 overflow-y-auto">
-              <NavList sections={navSections} />
-            </div>
-            <div class="sidebar-foot mt-auto px-4 py-3 flex items-center gap-2">
-              <!-- The ThemeToggle moved to the top bar, where it sits next to
-                   the profile menu that now owns the rest of "my account".
-                   Two toggles on one page would be two controls for one
-                   setting. The target label stays: it is the only thing in
-                   the rail that says which product this is. -->
-              <span class="sidebar-hide-collapsed text-xs" style="color: var(--color-muted)">
-                {FRONTEND_TARGET === "customer" ? "Kundenportal" : "Management"}
-              </span>
-            </div>
-          </aside>
-          <div class="nav-drawer lg:hidden" id="nav-drawer" data-open="false">
-            <div class="nav-drawer-backdrop" data-nav-drawer-close></div>
-            <div class="nav-drawer-panel">
-              <div class="px-4 py-4 flex items-center gap-2">
-                <BrandWordmark />
-                <button
-                  type="button"
-                  class="btn btn-ghost ml-auto"
-                  data-nav-drawer-close
-                  aria-label="Navigation schließen"
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-                    <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
-                  </svg>
-                </button>
-              </div>
-              <NavList sections={navSections} />
-            </div>
-          </div>
+          <MobileTopBar pageLabel={pageLabel} />
+          <SidebarRail navSections={navSections} />
+          <NavDrawer navSections={navSections} />
 
           <!-- The rail's neighbour is a COLUMN, not the page itself: the top
                bar has to sit above the canvas and stick while it scrolls.
