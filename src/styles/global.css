@@ -223,11 +223,7 @@
   }
   .settings-index__link {
     display: flex;
-    padding: 0.375rem 0.75rem;
-    border-left: 2px solid var(--color-line);
-  }
-  .settings-index__link[aria-current="true"] {
-    border-left-color: var(--tds-panel-accent);
+    padding: 0.375rem 0;
   }
 }
 @media (prefers-reduced-motion: no-preference) {
